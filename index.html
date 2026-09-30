@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+<title>Stickman War</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;}
+body{background:#0a0a1a;display:flex;align-items:center;justify-content:center;height:100vh;width:100vw;overflow:hidden;font-family:'Segoe UI',Arial,sans-serif;}
+canvas{display:block;touch-action:none;image-rendering:pixelated;}
+
+/* ── Overlay Screens ── */
+.screen{position:absolute;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:20;padding:20px;}
+.screen.hidden{display:none;}
+#screen-gameover{z-index:250 !important;}
+.glass{background:rgba(8,12,30,0.93);border:1px solid #2a3a5a;border-radius:18px;padding:24px 20px;width:100%;max-width:360px;box-shadow:0 8px 40px #0008;}
+
+h1.logo{color:#ffe066;font-size:2.2em;font-weight:900;text-shadow:0 0 20px #f906,0 2px 4px #0008;letter-spacing:3px;margin-bottom:4px;text-align:center;}
+.logo-sub{color:#7af;font-size:.85em;text-align:center;margin-bottom:22px;letter-spacing:1px;}
+
+.field-label{color:#89a;font-size:.78em;margin-bottom:4px;font-weight:600;letter-spacing:1px;}
+input[type=text],input[type=password]{width:100%;background:#0d1525;border:1.5px solid #2a3a6a;border-radius:10px;color:#ddf;font-size:1em;padding:10px 14px;outline:none;margin-bottom:14px;transition:border-color .2s;user-select:text !important;-webkit-user-select:text !important;}
+input:focus{border-color:#5af;}
+
+.btn{display:block;width:100%;padding:13px;border:none;border-radius:12px;font-size:1em;font-weight:800;cursor:pointer;letter-spacing:1px;transition:all .12s;margin-bottom:10px;}
+.btn:active{transform:scale(0.97);}
+.btn-primary{background:linear-gradient(135deg,#ffe066,#f80);color:#1a1000;}
+.btn-secondary{background:linear-gradient(135deg,#1a2a4a,#0d1a30);color:#7af;border:1.5px solid #2a4a7a;}
+.btn-danger{background:linear-gradient(135deg,#5a0a0a,#a01010);color:#faa;}
+.btn-green{background:linear-gradient(135deg,#0a4a1a,#0a8a2a);color:#afa;}
+.btn-sm{width:auto;display:inline-block;padding:8px 18px;font-size:.82em;margin:3px;}
+
+.err{color:#f66;font-size:.82em;text-align:center;min-height:18px;margin-bottom:6px;}
+.info{color:#7af;font-size:.82em;text-align:center;margin-top:8px;}
+
+/* ── HUD overlay on canvas ── */
+#ui-bottom{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;pointer-events:auto;z-index:100;}
+.unit-bar{display:flex;gap:8px;justify-content:center;padding:8px 8px 16px;background:rgba(6,10,24,0.88);border-top:1px solid #1a2a4a;}
+.unit-btn{flex:1;max-width:108px;background:linear-gradient(160deg,#0d1a2e,#162440);border:1.5px solid #2a4060;border-radius:14px;padding:8px 4px 6px;cursor:pointer;color:#cdf;font-size:.7em;font-weight:700;line-height:1.5;transition:all .1s;position:relative;outline:none;}
+.unit-btn:active{transform:scale(0.95);}
+.unit-btn.cant-afford{opacity:.4;border-color:#333;cursor:not-allowed;}
+.unit-btn .cost{color:#fc0;font-weight:900;}
+.unit-btn .icon{font-size:1.5em;display:block;}
+
+/* ── Level Select ── */
+.level-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;width:100%;}
+.lvl-btn{background:linear-gradient(135deg,#0d1a2e,#162440);border:2px solid #2a4060;border-radius:12px;padding:12px 4px;cursor:pointer;color:#cdf;font-size:.75em;text-align:center;transition:all .12s;width:100%;outline:none;}
+.lvl-btn:active{transform:scale(0.96);}
+.lvl-btn:disabled,.lvl-btn.locked{opacity:.4;cursor:not-allowed;}
+.lvl-btn.completed{border-color:#2a8a2a;background:linear-gradient(135deg,#0a200a,#0a3a12);}
+.lvl-btn.completed .stars{color:#fc0;}
+.lvl-btn.boss-level{border-color:#ff3344;background:linear-gradient(135deg,#2b0b14,#44101e);box-shadow:0 0 10px rgba(255,34,68,0.25);}
+.lvl-btn.boss-level.completed{border-color:#ffd700;background:linear-gradient(135deg,#2b1f0b,#4a3410);box-shadow:0 0 10px rgba(255,215,0,0.3);}
+.lvl-btn .lvl-num{font-size:1.4em;font-weight:900;color:#ffe066;}
+
+/* ── Shop ── */
+.shop-item{background:linear-gradient(135deg,#0d1a2e,#131e30);border:1.5px solid #2a3a5a;border-radius:12px;padding:12px;margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+.shop-item .icon{font-size:1.8em;width:36px;text-align:center;}
+.shop-item .info-block{flex:1;}
+.shop-item .name{color:#ddf;font-weight:700;font-size:.88em;}
+.shop-item .desc{color:#78a;font-size:.72em;margin-top:2px;}
+.shop-item .btn-buy{padding:7px 14px;font-size:.75em;}
+
+.stat-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #1a2a3a;color:#acd;font-size:.82em;}
+.stat-row:last-child{border-bottom:none;}
+.stat-val{color:#ffe066;font-weight:700;}
+
+.tab-bar{display:flex;gap:6px;margin-bottom:16px;width:100%;}
+.tab{flex:1;padding:9px;border:1.5px solid #2a3a5a;border-radius:10px;background:#0d1525;color:#78a;font-size:.8em;font-weight:700;cursor:pointer;text-align:center;transition:all .12s;}
+.tab.active{background:#1a2a4a;border-color:#5af;color:#adf;}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="ui-bottom" class="hidden"></div>
+
+<!-- ══ SCREEN: LOGIN ══════════════════════════════════════════════════════ -->
+<div id="screen-login" class="screen">
+  <div class="glass">
+    <h1 class="logo">⚔️ STICKMAN WAR</h1>
+    <div class="logo-sub">Simpan progress & statistik lokal di perangkat kamu</div>
+    <div id="login-tabs" class="tab-bar">
+      <div class="tab active" onclick="loginTab('login')">MASUK / DAFTAR</div>
+      <div class="tab" onclick="loginTab('register')">BUAT AKUN BARU</div>
+    </div>
+    <div id="div-login">
+      <div class="field-label">USERNAME / NAMA</div>
+      <input type="text" id="l-user" placeholder="Masukkan nama pemain..." autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()"/>
+      <div class="field-label">PASSWORD (PIN)</div>
+      <input type="password" id="l-pass" placeholder="Masukkan password/PIN..." onkeydown="if(event.key==='Enter')doLogin()"/>
+      <div class="err" id="l-err"></div>
+      <button class="btn btn-primary" onclick="doLogin()">▶ MASUK DENGAN NAMA</button>
+      <button class="btn btn-green" onclick="doQuickPlay()" style="margin-bottom:8px;">⚡ LANGSUNG MAIN (INSTANT PLAY)</button>
+      <div style="text-align:center;font-size:0.75em;color:#789;margin-bottom:10px;">*Jika nama belum ada, akun akan otomatis dibuatkan!</div>
+      <button class="btn btn-secondary" onclick="doGuest()">👤 Masuk Menu (Guest)</button>
+    </div>
+    <div id="div-register" class="hidden">
+      <div class="field-label">USERNAME BARU</div>
+      <input type="text" id="r-user" placeholder="Pilih nama..." autocomplete="off" onkeydown="if(event.key==='Enter')doRegister()"/>
+      <div class="field-label">PASSWORD</div>
+      <input type="password" id="r-pass" placeholder="Minimal 3 karakter..." onkeydown="if(event.key==='Enter')doRegister()"/>
+      <div class="field-label">KONFIRMASI PASSWORD</div>
+      <input type="password" id="r-pass2" placeholder="Ulangi password..." onkeydown="if(event.key==='Enter')doRegister()"/>
+      <div class="err" id="r-err"></div>
+      <button class="btn btn-primary" onclick="doRegister()">✅ BUAT AKUN</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN: MAIN MENU ══════════════════════════════════════════════════ -->
+<div id="screen-menu" class="screen hidden">
+  <div class="glass" style="text-align:center;">
+    <h1 class="logo">⚔️ STICKMAN WAR</h1>
+    <div style="color:#7af;margin-bottom:14px;">Halo Panglima, <span id="menu-user" style="color:#ffe066;font-weight:800;"></span>!</div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:16px;">
+      <div style="background:#0d1525;border:1px solid #2a3a5a;border-radius:10px;padding:8px 14px;font-size:.8em;color:#acd;">🏆 Progress: <span id="menu-best" style="color:#fc0;font-weight:800;">Level 1</span></div>
+      <div style="background:#0d1525;border:1px solid #2a3a5a;border-radius:10px;padding:8px 14px;font-size:.8em;color:#acd;">💎 Gems: <span id="menu-gems" style="color:#fc0;font-weight:800;">0</span></div>
+    </div>
+    <button class="btn btn-primary" style="font-size:1.15em;padding:15px;margin-bottom:10px;box-shadow:0 0 16px #f905;" onclick="playNextLevel()">▶ MAIN SEKARANG (BATTLE)</button>
+    <button class="btn btn-secondary" onclick="showScreen('screen-levels')">🗺️ PILIH LEVEL (CAMPAIGN)</button>
+    <button class="btn btn-secondary" onclick="showShop()">🏪 SHOP UPGRADE</button>
+    <button class="btn btn-secondary" onclick="showProfile()">👤 STATISTIK & PROFIL</button>
+    <button class="btn btn-danger" onclick="doLogout()" style="margin-top:6px;">🚪 Keluar / Ganti Akun</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN: LEVEL SELECT ═══════════════════════════════════════════════ -->
+<div id="screen-levels" class="screen hidden">
+  <div class="glass" style="max-height:90vh;overflow-y:auto;">
+    <h2 style="color:#ffe066;text-align:center;margin-bottom:4px;">🗺️ CAMPAIGN</h2>
+    <div style="color:#78a;text-align:center;font-size:.8em;margin-bottom:4px;">Complete levels to earn Gems · Stars = time bonus</div>
+    <div class="level-grid" id="level-grid"></div>
+    <button class="btn btn-secondary" style="margin-top:14px;" onclick="showScreen('screen-menu')">← BACK</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN: SHOP ════════════════════════════════════════════════════════ -->
+<div id="screen-shop" class="screen hidden">
+  <div class="glass" style="max-height:90vh;overflow-y:auto;">
+    <h2 style="color:#ffe066;text-align:center;margin-bottom:4px;">🏪 SHOP</h2>
+    <div style="color:#78a;text-align:center;font-size:.8em;margin-bottom:14px;">Gems: <span id="shop-gems" style="color:#fc0;font-weight:800;">0</span> 💎</div>
+    <div id="shop-items"></div>
+    <button class="btn btn-secondary" style="margin-top:8px;" onclick="showScreen('screen-menu')">← BACK</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN: PROFILE ════════════════════════════════════════════════════ -->
+<div id="screen-profile" class="screen hidden">
+  <div class="glass" style="max-height:90vh;overflow-y:auto;">
+    <h2 style="color:#ffe066;text-align:center;margin-bottom:14px;">👤 PROFILE</h2>
+    <div id="profile-stats"></div>
+    <button class="btn btn-danger" onclick="confirmReset()" style="margin-top:12px;">🗑 Reset Progress</button>
+    <button class="btn btn-secondary" style="margin-top:6px;" onclick="showScreen('screen-menu')">← BACK</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN: IN-GAME OVERLAY ════════════════════════════════════════════ -->
+<div id="screen-gameover" class="screen hidden">
+  <div class="glass" style="text-align:center;">
+    <div id="go-result" style="font-size:2em;font-weight:900;margin-bottom:8px;"></div>
+    <div id="go-stars" style="font-size:1.8em;margin-bottom:8px;"></div>
+    <div id="go-details" style="color:#acd;font-size:.85em;margin-bottom:16px;"></div>
+    <button class="btn btn-primary" id="go-next" onclick="goNextLevel()" class="hidden">▶ NEXT LEVEL</button>
+    <button class="btn btn-green" onclick="retryLevel()">🔄 RETRY</button>
+    <button class="btn btn-secondary" onclick="showScreen('screen-levels')">🗺️ LEVELS</button>
+  </div>
+</div>
+
+<script>
+'use strict';
+let gs = null;
+let currentLevelId = 1;
+// ══════════════════════════════════════════════════════════════════════════════
+// ── DATA / PERSISTENCE ────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+const DB_KEY = 'stickmwar_db';
+let memDb = null;
+
+function dbLoad(){
+  try{
+    const raw = localStorage.getItem(DB_KEY);
+    return raw ? JSON.parse(raw) : (memDb || {});
+  }catch(e){
+    return memDb || {};
+  }
+}
+function dbSave(db){
+  memDb = db;
+  try{ localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+  catch(e){}
+}
+
+function safeHash(str){
+  try{
+    return btoa(encodeURIComponent(str));
+  }catch(e){
+    return str;
+  }
+}
+
+function getUsers(){ return dbLoad().users || {}; }
+function saveUsers(u){ const db=dbLoad(); db.users=u; dbSave(db); }
+
+// ── Current session ──────────────────────────────────────────────────────────
+let session = null; // { username, profile }
+
+const DEFAULT_PROFILE = () => ({
+  gems: 15,
+  levels: {},          // { [lvlId]: { stars, time } }
+  upgrades: {},        // { [upgradeId]: level }
+  stats: { gamesPlayed:0, wins:0, kills:0, wavesCleared:0 }
+});
+
+function getProfile(username){
+  const users = getUsers();
+  if(!users[username]) return null;
+  return users[username].profile || DEFAULT_PROFILE();
+}
+function saveProfile(){
+  if(!session) return;
+  const users = getUsers();
+  if(!users[session.username]){
+    users[session.username] = { password: '', profile: session.profile };
+  } else {
+    users[session.username].profile = session.profile;
+  }
+  saveUsers(users);
+}
+
+// ── Upgrades catalog ─────────────────────────────────────────────────────────
+const UPGRADES = [
+  { id:'coin_rate',   name:'Coin Boost',    icon:'🪙', desc:'+20% coin income per level', maxLvl:5, cost:[8,15,25,40,60],  effect:'coinRate', perLvl:0.2 },
+  { id:'warrior_hp',  name:'Warrior HP',    icon:'⚔️', desc:'+15% Warrior HP per level',  maxLvl:5, cost:[8,15,25,40,60],  effect:'warrior_hp', perLvl:0.15 },
+  { id:'archer_dmg',  name:'Archer Power',  icon:'🏹', desc:'+20% Archer damage per level',maxLvl:5, cost:[10,18,28,45,70], effect:'archer_dmg', perLvl:0.2 },
+  { id:'spear_spd',   name:'Spear Speed',   icon:'🗡️', desc:'+15% Spearman speed',        maxLvl:5, cost:[8,15,25,40,60],  effect:'spearman_spd', perLvl:0.15 },
+  { id:'base_hp',     name:'Fortify Base',  icon:'🏰', desc:'+100 Player base HP per level',maxLvl:5,cost:[12,20,32,50,80], effect:'base_hp', perLvl:100 },
+  { id:'start_coins', name:'Bonus Coins',   icon:'💰', desc:'+30 starting coins per level', maxLvl:3, cost:[12,22,38],       effect:'start_coins', perLvl:30 },
+];
+
+function getUpgradeVal(effect, profile){
+  const upg = UPGRADES.find(u=>u.effect===effect);
+  if(!upg) return 0;
+  const lvl = (profile.upgrades || {})[upg.id] || 0;
+  return lvl * upg.perLvl;
+}
+
+// ── Campaign levels (30 Levels, Boss every multiple of 5) ────────────────────
+const LEVELS = [
+  // Realm 1: Plains (Levels 1 - 5)
+  { id:1,  name:'Green Plains',       bg:'plains',  waves:3, enemyHpMul:1.0, enemyDmgMul:1.0, coinMul:1.0, baseHp:400, desc:'Tutorial medan perang' },
+  { id:2,  name:'Windy Steppe',       bg:'plains',  waves:4, enemyHpMul:1.1, enemyDmgMul:1.05, coinMul:1.1, baseHp:430, desc:'Pasukan perompak' },
+  { id:3,  name:'River Crossing',     bg:'plains',  waves:4, enemyHpMul:1.2, enemyDmgMul:1.1, coinMul:1.15, baseHp:460, desc:'Pertahankan jembatan' },
+  { id:4,  name:'Outpost Outskirts',  bg:'plains',  waves:5, enemyHpMul:1.35, enemyDmgMul:1.15, coinMul:1.2, baseHp:500, desc:'Garis depan musuh' },
+  { id:5,  name:'Goblin King Throne', bg:'plains',  waves:5, enemyHpMul:1.5, enemyDmgMul:1.25, coinMul:1.4, baseHp:600, desc:'👑 BOSS: Goblin King', isBoss:true, bossName:'Goblin King' },
+
+  // Realm 2: Desert (Levels 6 - 10)
+  { id:6,  name:'Dune Outskirts',     bg:'desert',  waves:4, enemyHpMul:1.6, enemyDmgMul:1.3, coinMul:1.3, baseHp:520, desc:'Gurun pasir tandus' },
+  { id:7,  name:'Sunken Oasis',       bg:'desert',  waves:5, enemyHpMul:1.75, enemyDmgMul:1.35, coinMul:1.4, baseHp:560, desc:'Penyergapan gurun' },
+  { id:8,  name:'Canyon of Bones',    bg:'desert',  waves:5, enemyHpMul:1.9, enemyDmgMul:1.4, coinMul:1.5, baseHp:600, desc:'Jalur sempit berbatu' },
+  { id:9,  name:'Sandstorm Gorge',    bg:'desert',  waves:6, enemyHpMul:2.1, enemyDmgMul:1.5, coinMul:1.6, baseHp:650, desc:'Badai pasir ganas' },
+  { id:10, name:'Tomb of the Giant',  bg:'desert',  waves:6, enemyHpMul:2.4, enemyDmgMul:1.6, coinMul:1.8, baseHp:780, desc:'👑 BOSS: Skeleton Giant', isBoss:true, bossName:'Skeleton Giant' },
+
+  // Realm 3: Forest (Levels 11 - 15)
+  { id:11, name:'Whispering Woods',   bg:'forest',  waves:5, enemyHpMul:2.3, enemyDmgMul:1.65, coinMul:1.7, baseHp:650, desc:'Hutan berkabut gelap' },
+  { id:12, name:'Poison Mire',        bg:'forest',  waves:5, enemyHpMul:2.5, enemyDmgMul:1.7, coinMul:1.8, baseHp:700, desc:'Rawa beracun mematikan' },
+  { id:13, name:'Spider Glen',        bg:'forest',  waves:6, enemyHpMul:2.7, enemyDmgMul:1.8, coinMul:1.9, baseHp:750, desc:'Serbuan cepat musuh' },
+  { id:14, name:'Ancient Grove',      bg:'forest',  waves:6, enemyHpMul:2.9, enemyDmgMul:1.9, coinMul:2.0, baseHp:800, desc:'Reruntuhan kuil kuno' },
+  { id:15, name:'Heart of Titan',     bg:'forest',  waves:6, enemyHpMul:3.3, enemyDmgMul:2.0, coinMul:2.2, baseHp:950, desc:'👑 BOSS: Treant Titan', isBoss:true, bossName:'Treant Titan' },
+
+  // Realm 4: Snow (Levels 16 - 20)
+  { id:16, name:'Frost Valley',       bg:'snow',    waves:5, enemyHpMul:3.1, enemyDmgMul:2.0, coinMul:2.1, baseHp:800, desc:'Salju dingin membeku' },
+  { id:17, name:'Glacial Divide',     bg:'snow',    waves:6, enemyHpMul:3.3, enemyDmgMul:2.1, coinMul:2.2, baseHp:850, desc:'Lembah es terjal' },
+  { id:18, name:'Blizzard Ridge',     bg:'snow',    waves:6, enemyHpMul:3.6, enemyDmgMul:2.2, coinMul:2.3, baseHp:900, desc:'Badai salju tebal' },
+  { id:19, name:'Icebound Keep',      bg:'snow',    waves:7, enemyHpMul:3.9, enemyDmgMul:2.3, coinMul:2.5, baseHp:980, desc:'Benteng es yang kokoh' },
+  { id:20, name:'Crown of Glacier',   bg:'snow',    waves:7, enemyHpMul:4.4, enemyDmgMul:2.5, coinMul:2.8, baseHp:1150, desc:'👑 BOSS: Frost Dragon King', isBoss:true, bossName:'Frost Dragon King' },
+
+  // Realm 5: Volcano (Levels 21 - 25)
+  { id:21, name:'Ash Wasteland',      bg:'volcano', waves:6, enemyHpMul:4.2, enemyDmgMul:2.5, coinMul:2.7, baseHp:950, desc:'Lautan abu vulkanik' },
+  { id:22, name:'Brimstone Ravine',   bg:'volcano', waves:6, enemyHpMul:4.5, enemyDmgMul:2.6, coinMul:2.9, baseHp:1000, desc:'Sungai lahar membara' },
+  { id:23, name:'Molten Core',        bg:'volcano', waves:7, enemyHpMul:4.8, enemyDmgMul:2.7, coinMul:3.1, baseHp:1080, desc:'Kawah magma pijar' },
+  { id:24, name:'Obsidian Gates',     bg:'volcano', waves:7, enemyHpMul:5.2, enemyDmgMul:2.9, coinMul:3.3, baseHp:1180, desc:'Gerbang api obsidian' },
+  { id:25, name:'Colossus Caldera',   bg:'volcano', waves:8, enemyHpMul:5.8, enemyDmgMul:3.1, coinMul:3.6, baseHp:1400, desc:'👑 BOSS: Magma Colossus', isBoss:true, bossName:'Magma Colossus' },
+
+  // Realm 6: Night / Shadow Realm (Levels 26 - 30)
+  { id:26, name:'Dusk Threshold',     bg:'night',   waves:6, enemyHpMul:5.6, enemyDmgMul:3.1, coinMul:3.5, baseHp:1150, desc:'Gerbang malam abadi' },
+  { id:27, name:'Shadow Crypts',      bg:'night',   waves:7, enemyHpMul:6.0, enemyDmgMul:3.3, coinMul:3.8, baseHp:1250, desc:'Jeritan kegelapan' },
+  { id:28, name:'Void Sanctuary',     bg:'night',   waves:7, enemyHpMul:6.5, enemyDmgMul:3.5, coinMul:4.1, baseHp:1350, desc:'Prajurit bayangan elit' },
+  { id:29, name:'Nether Gate',        bg:'night',   waves:8, enemyHpMul:7.1, enemyDmgMul:3.8, coinMul:4.5, baseHp:1500, desc:'Garis pertahanan akhir' },
+  { id:30, name:'Throne of Emperor',  bg:'night',   waves:9, enemyHpMul:8.0, enemyDmgMul:4.2, coinMul:5.5, baseHp:1800, desc:'👑 FINAL BOSS: Dark Emperor', isBoss:true, bossName:'Dark Emperor' },
+];
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── AUTH SCREENS ──────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
+  const target = document.getElementById(id);
+  if(target) target.classList.remove('hidden');
+  document.getElementById('ui-bottom').classList.add('hidden');
+}
+
+function loginTab(tab){
+  document.querySelectorAll('#login-tabs .tab').forEach((t,i)=>{
+    t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register'));
+  });
+  document.getElementById('div-login').classList.toggle('hidden', tab!=='login');
+  document.getElementById('div-register').classList.toggle('hidden', tab!=='register');
+  const errL = document.getElementById('l-err'); if(errL) errL.textContent='';
+  const errR = document.getElementById('r-err'); if(errR) errR.textContent='';
+}
+
+function doLogin(){
+  const u = document.getElementById('l-user').value.trim();
+  const p = document.getElementById('l-pass').value;
+  const err = document.getElementById('l-err');
+  if(!u){
+    err.style.color='#f88';
+    err.textContent='Silakan masukkan nama / username kamu.';
+    return;
+  }
+  const users = getUsers();
+  // Jika akun belum pernah dibuat, otomatis daftarkan dan langsung masuk!
+  if(!users[u]){
+    users[u] = { password: safeHash(p), profile: DEFAULT_PROFILE() };
+    saveUsers(users);
+    err.style.color='#5f5';
+    err.textContent='✨ Akun baru dibuat! Memulai game...';
+    setTimeout(()=>loginAs(u, users[u].profile), 400);
+    return;
+  }
+  // Jika akun sudah ada dan memiliki password
+  if(users[u].password && p && users[u].password !== safeHash(p)){
+    err.style.color='#f66';
+    err.textContent='Password salah untuk akun ini.';
+    return;
+  }
+  err.textContent='';
+  loginAs(u, users[u].profile || DEFAULT_PROFILE());
+}
+
+function doRegister(){
+  const u = document.getElementById('r-user').value.trim();
+  const p = document.getElementById('r-pass').value;
+  const p2= document.getElementById('r-pass2').value;
+  const err= document.getElementById('r-err');
+  if(!u){ err.textContent='Masukkan username.'; return; }
+  if(u.length<2){ err.textContent='Nama minimal 2 huruf.'; return; }
+  if(p && p!==p2){ err.textContent='Password tidak cocok.'; return; }
+  const users = getUsers();
+  if(users[u]){
+    err.style.color='#fa0';
+    err.textContent='Nama sudah terdaftar! Silakan login di tab MASUK.';
+    return;
+  }
+  users[u] = { password: safeHash(p), profile: DEFAULT_PROFILE() };
+  saveUsers(users);
+  err.style.color='#5f5';
+  err.textContent='✅ Akun berhasil dibuat! Memulai...';
+  setTimeout(()=>loginAs(u, users[u].profile), 500);
+}
+
+function doGuest(){
+  let guestProfile = DEFAULT_PROFILE();
+  try{
+    const users = getUsers();
+    if(users['Guest'] && users['Guest'].profile) guestProfile = users['Guest'].profile;
+  }catch(e){}
+  loginAs('Guest', guestProfile);
+}
+
+function doLogout(){
+  session = null;
+  showScreen('screen-login');
+}
+
+function loginAs(username, profile){
+  session = { username, profile };
+  try{ localStorage.setItem('stickmwar_last_user', username); }catch(e){}
+  document.getElementById('menu-user').textContent = username;
+  refreshMenuStats();
+  showScreen('screen-menu');
+}
+
+function refreshMenuStats(){
+  if(!session) return;
+  const p = session.profile;
+  document.getElementById('menu-gems').textContent = p.gems;
+  const bestLvl = Object.keys(p.levels).length;
+  document.getElementById('menu-best').textContent = bestLvl ? `Level ${bestLvl}` : 'None';
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── LEVEL SELECT ──────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+function buildLevelGrid(){
+  const grid = document.getElementById('level-grid');
+  if(!grid) return;
+  grid.innerHTML = '';
+  const p = session ? session.profile : DEFAULT_PROFILE();
+  const clearedLevels = (p && p.levels) ? p.levels : {};
+  LEVELS.forEach((lv, i) => {
+    const prevCleared = i === 0 || clearedLevels[LEVELS[i-1].id];
+    const isLocked = !prevCleared && i > 0;
+    const data = clearedLevels[lv.id];
+    const stars = data ? data.stars : 0;
+    const btn = document.createElement('button');
+    let cls = 'lvl-btn' + (isLocked ? ' locked' : '') + (data ? ' completed' : '');
+    if(lv.isBoss) cls += ' boss-level';
+    btn.className = cls;
+    btn.disabled = isLocked;
+    const bossBadge = lv.isBoss ? `<div style="background:#ff2244;color:#fff;font-weight:900;font-size:0.62em;padding:2px 4px;border-radius:6px;display:inline-block;margin-bottom:2px;box-shadow:0 0 6px #f24;">👑 BOSS</div>` : '';
+    btn.innerHTML = `
+      ${bossBadge}
+      <div class="lvl-num" style="${lv.isBoss ? 'color:#ff4466;' : ''}">${isLocked ? '🔒' : lv.id}</div>
+      <div style="font-size:.72em;color:${lv.isBoss ? '#ffccaa' : '#acd'};font-weight:700;margin:2px 0;">${lv.name}</div>
+      <div class="stars">${isLocked ? 'TERKUNCI' : ('★'.repeat(stars) + '☆'.repeat(3 - stars))}</div>
+      <div style="font-size:.62em;color:#89a;margin-top:2px;line-height:1.2;">${lv.desc}</div>
+    `;
+    if(!isLocked){
+      btn.onclick = () => startLevel(lv.id);
+    }
+    grid.appendChild(btn);
+  });
+}
+
+function playNextLevel(){
+  if(!session){
+    doGuest();
+  }
+  const p = session.profile;
+  const cleared = (p && p.levels) ? p.levels : {};
+  let targetId = 1;
+  for(let i = 0; i < LEVELS.length; i++){
+    if(!cleared[LEVELS[i].id]){
+      targetId = LEVELS[i].id;
+      break;
+    }
+    targetId = LEVELS[i].id; // if all cleared, play latest
+  }
+  startLevel(targetId);
+}
+
+function doQuickPlay(){
+  if(!session) doGuest();
+  playNextLevel();
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── SHOP ──────────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+function showShop(){
+  buildShop();
+  showScreen('screen-shop');
+}
+
+function buildShop(){
+  const p = session.profile;
+  document.getElementById('shop-gems').textContent = p.gems;
+  const container = document.getElementById('shop-items');
+  container.innerHTML = '';
+  UPGRADES.forEach(upg => {
+    const curLvl = (p.upgrades||{})[upg.id] || 0;
+    const maxed = curLvl >= upg.maxLvl;
+    const cost = maxed ? 0 : upg.cost[curLvl];
+    const canBuy = !maxed && p.gems >= cost;
+    const item = document.createElement('div');
+    item.className = 'shop-item';
+    item.innerHTML = `
+      <div class="icon">${upg.icon}</div>
+      <div class="info-block">
+        <div class="name">${upg.name} ${'▪'.repeat(curLvl)}${'▫'.repeat(upg.maxLvl-curLvl)}</div>
+        <div class="desc">${upg.desc}</div>
+      </div>
+      <button class="btn btn-buy ${canBuy?'btn-primary':'btn-secondary'}" 
+        ${maxed||!canBuy?'disabled':''} onclick="buyUpgrade('${upg.id}')">
+        ${maxed ? 'MAX' : `${cost}💎`}
+      </button>
+    `;
+    container.appendChild(item);
+  });
+}
+
+function buyUpgrade(id){
+  const p = session.profile;
+  const upg = UPGRADES.find(u=>u.id===id);
+  const curLvl = (p.upgrades||{})[upg.id] || 0;
+  if(curLvl >= upg.maxLvl) return;
+  const cost = upg.cost[curLvl];
+  if(p.gems < cost) return;
+  p.gems -= cost;
+  if(!p.upgrades) p.upgrades = {};
+  p.upgrades[upg.id] = curLvl + 1;
+  saveProfile();
+  buildShop();
+  refreshMenuStats();
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── PROFILE ───────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+function showProfile(){
+  const p = session.profile;
+  const s = p.stats || {};
+  const completed = Object.values(p.levels).filter(l=>l).length;
+  document.getElementById('profile-stats').innerHTML = `
+    <div class="stat-row"><span>👤 Username</span><span class="stat-val">${session.username}</span></div>
+    <div class="stat-row"><span>💎 Gems</span><span class="stat-val">${p.gems}</span></div>
+    <div class="stat-row"><span>🗺 Levels Cleared</span><span class="stat-val">${completed} / ${LEVELS.length}</span></div>
+    <div class="stat-row"><span>🎮 Games Played</span><span class="stat-val">${s.gamesPlayed||0}</span></div>
+    <div class="stat-row"><span>🏆 Wins</span><span class="stat-val">${s.wins||0}</span></div>
+    <div class="stat-row"><span>☠️ Enemies Killed</span><span class="stat-val">${s.kills||0}</span></div>
+    <div class="stat-row"><span>🌊 Waves Cleared</span><span class="stat-val">${s.wavesCleared||0}</span></div>
+  `;
+  showScreen('screen-profile');
+}
+
+function confirmReset(){
+  if(confirm('Reset ALL progress for this account? This cannot be undone.')){
+    session.profile = DEFAULT_PROFILE();
+    saveProfile();
+    showProfile();
+    refreshMenuStats();
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── CANVAS SETUP ─────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let W, H;
+function resizeCanvas(){
+  W = Math.min(window.innerWidth, 420);
+  H = window.innerHeight;
+  canvas.width = W; canvas.height = H;
+  if(gs) gs.onResize();
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── GRAPHICS HELPERS ─────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+function rnd(a,b){ return a + Math.random()*(b-a); }
+function clamp(v,lo,hi){ return v<lo?lo:v>hi?hi:v; }
+function lerp(a,b,t){ return a+(b-a)*t; }
+
+// Pixel-art style shadow
+function shadow(fn, blur=4, color='#0008'){
+  ctx.save();
+  ctx.shadowBlur = blur;
+  ctx.shadowColor = color;
+  fn();
+  ctx.restore();
+}
+
+// ── Stickman (enhanced pixel-art style with limb animation) ──────────────────
+function drawStickman(x, y, color, dir, anim, role, hitFlash){
+  ctx.save();
+  const f = hitFlash ? '#fff' : color;
+  const walk = Math.sin(anim * 7.5) * 0.28;
+
+  const R = role==='warrior' ? 11 : 9.5;
+  const headR = R * 0.53;
+  const tH = R * 1.25, legH = R * 1.1, armH = R * 0.88;
+
+  // ── shadow on ground ──
+  ctx.fillStyle = 'rgba(0,0,0,0.22)';
+  ctx.beginPath();
+  ctx.ellipse(x, y + legH + 1, R*1.1, 3, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  ctx.strokeStyle = f; ctx.fillStyle = f;
+  ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+  // glow
+  if(!hitFlash){
+    ctx.shadowBlur = 6; ctx.shadowColor = color + '99';
+  }
+
+  // ── head ──
+  ctx.beginPath();
+  ctx.arc(x, y - tH - headR, headR, 0, Math.PI*2);
+  ctx.fill();
+  // eyes
+  ctx.fillStyle = hitFlash ? '#f006' : '#0008';
+  const ex = x + dir * headR * 0.35, ey = y - tH - headR + 1;
+  ctx.beginPath(); ctx.arc(ex, ey, 1.6, 0, Math.PI*2); ctx.fill();
+
+  ctx.strokeStyle = f; ctx.fillStyle = f;
+
+  // ── torso ──
+  ctx.beginPath(); ctx.moveTo(x, y-tH); ctx.lineTo(x, y); ctx.stroke();
+
+  // ── legs ──
+  const lA = Math.sin(anim*7.5)*legH*0.9;
+  ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+lA*dir*0.3,y+legH); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x-lA*dir*0.3,y+legH); ctx.stroke();
+  // feet
+  ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(x+lA*dir*0.3,y+legH); ctx.lineTo(x+lA*dir*0.3+dir*5,y+legH); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x-lA*dir*0.3,y+legH); ctx.lineTo(x-lA*dir*0.3+dir*4,y+legH); ctx.stroke();
+
+  ctx.lineWidth = 2.4;
+  // ── arms ──
+  const aA = Math.sin(anim*7.5+Math.PI)*armH;
+  ctx.beginPath(); ctx.moveTo(x,y-tH*0.75); ctx.lineTo(x+dir*armH*0.8, y-tH*0.3+aA*0.2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x,y-tH*0.75); ctx.lineTo(x-dir*armH*0.6,y-tH*0.55-aA*0.2); ctx.stroke();
+
+  // ── weapon / tool per role ──
+  ctx.shadowBlur=0;
+  if(role==='warrior'){
+    // sword
+    ctx.strokeStyle = hitFlash ? '#fff' : '#c0d8ff';
+    ctx.lineWidth = 2.5;
+    const sx = x+dir*armH*0.8, sy = y-tH*0.3;
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx+dir*14, sy-12); ctx.stroke();
+    ctx.strokeStyle='#8a6020'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(sx-dir*2,sy+2); ctx.lineTo(sx+dir*2,sy-3); ctx.stroke();
+    // guard
+    ctx.strokeStyle=hitFlash?'#fff':'#dda'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(sx+dir*4-3,sy-4); ctx.lineTo(sx+dir*4+3,sy-4); ctx.stroke();
+  } else if(role==='archer'){
+    // bow
+    ctx.strokeStyle=hitFlash?'#fff':'#a0702a'; ctx.lineWidth=2;
+    const bx=x+dir*9, by=y-tH*0.55;
+    const bArc = dir<0 ? [Math.PI*0.5,Math.PI*1.5,false] : [Math.PI*1.5,Math.PI*0.5,false];
+    ctx.beginPath(); ctx.arc(bx,by,9,bArc[0],bArc[1],bArc[2]); ctx.stroke();
+    // string
+    ctx.strokeStyle=hitFlash?'#fff':'#ffe08888'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(bx,by-9); ctx.lineTo(bx,by+9); ctx.stroke();
+    // arrow
+    ctx.strokeStyle=hitFlash?'#fff':'#d0c090'; ctx.lineWidth=1.8;
+    ctx.beginPath(); ctx.moveTo(bx-dir*7,by); ctx.lineTo(bx+dir*6,by); ctx.stroke();
+    ctx.fillStyle=hitFlash?'#fff':'#d08020';
+    ctx.beginPath(); ctx.moveTo(bx+dir*6,by); ctx.lineTo(bx+dir*2,by-3); ctx.lineTo(bx+dir*2,by+3); ctx.closePath(); ctx.fill();
+  } else {
+    // spear
+    ctx.strokeStyle=hitFlash?'#fff':'#bbb'; ctx.lineWidth=2;
+    const px2=x+dir*8, py2=y-tH*0.4;
+    ctx.beginPath(); ctx.moveTo(px2,py2+30); ctx.lineTo(px2,py2-8); ctx.stroke();
+    ctx.fillStyle=hitFlash?'#fff':'#c0d8ff';
+    ctx.beginPath(); ctx.moveTo(px2,py2-8); ctx.lineTo(px2+dir*6,py2+5); ctx.lineTo(px2-dir*6,py2+5); ctx.closePath(); ctx.fill();
+    // crossguard
+    ctx.strokeStyle=hitFlash?'#fff':'#8a7a60'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(px2-5,py2+12); ctx.lineTo(px2+5,py2+12); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+// ── Base / Castle ─────────────────────────────────────────────────────────────
+function drawCastle(x, groundY, color, hp, maxHp, label, dir){
+  ctx.save();
+  const bw=40, bh=72, bx=x-(dir>0?bw:0), by=groundY-bh;
+  // main tower
+  const grad = ctx.createLinearGradient(bx,by,bx+bw,by+bh);
+  grad.addColorStop(0, color+'cc');
+  grad.addColorStop(1, color+'55');
+  ctx.fillStyle=grad;
+  ctx.strokeStyle='#ffffff22'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.rect(bx,by,bw,bh); ctx.fill(); ctx.stroke();
+
+  // battlements
+  const bSize=9, bGap=3, startX=bx;
+  for(let i=0;i<3;i++){
+    ctx.fillStyle=color+'cc';
+    ctx.beginPath(); ctx.rect(startX+i*(bSize+bGap),by-bSize,bSize,bSize); ctx.fill(); ctx.stroke();
+  }
+
+  // gate arch
+  ctx.fillStyle='#00000055';
+  ctx.beginPath();
+  const gx=bx+bw/2-8, gy=groundY-28;
+  ctx.rect(gx, gy, 16, 28); ctx.fill();
+  ctx.beginPath(); ctx.arc(gx+8,gy,8,Math.PI,0,false); ctx.fill();
+
+  // windows
+  const winColor = hp/maxHp > 0.3 ? '#ffe06688' : '#ff222244';
+  ctx.fillStyle=winColor;
+  [[bx+8,by+12],[bx+22,by+12],[bx+15,by+32]].forEach(([wx,wy])=>{
+    ctx.beginPath(); ctx.rect(wx,wy,9,10); ctx.fill();
+    ctx.beginPath(); ctx.arc(wx+4.5,wy,4.5,Math.PI,0,false); ctx.fill();
+  });
+
+  // flag
+  ctx.strokeStyle=color; ctx.lineWidth=1.5;
+  const fx=bx+(dir>0?2:bw-2), fy=by-bSize-14;
+  ctx.beginPath(); ctx.moveTo(fx,fy); ctx.lineTo(fx,fy+20); ctx.stroke();
+  ctx.fillStyle=color;
+  ctx.beginPath();
+  if(dir>0){ ctx.moveTo(fx,fy); ctx.lineTo(fx+12,fy+5); ctx.lineTo(fx,fy+10); }
+  else      { ctx.moveTo(fx,fy); ctx.lineTo(fx-12,fy+5); ctx.lineTo(fx,fy+10); }
+  ctx.closePath(); ctx.fill();
+
+  // HP bar
+  const barW=70, barH=9, bpx=x-(dir>0?bw/2:bw/2)-barW/2+bw/2, bpy=by-bSize-32;
+  ctx.fillStyle='#000000aa';
+  ctx.fillRect(bpx,bpy,barW,barH);
+  const pct=clamp(hp/maxHp,0,1);
+  const hpColor = pct>.5?'#44ff66':pct>.25?'#ffcc00':'#ff3333';
+  ctx.fillStyle=hpColor;
+  if(barW*pct>0) ctx.fillRect(bpx,bpy,barW*pct,barH);
+  ctx.strokeStyle='#ffffff44'; ctx.lineWidth=1;
+  ctx.strokeRect(bpx,bpy,barW,barH);
+
+  ctx.fillStyle='#fff'; ctx.font='bold 9px Arial'; ctx.textAlign='center';
+  ctx.fillText(label, x, bpy-4);
+  ctx.fillStyle='#ddf'; ctx.font='8px Arial';
+  ctx.fillText(`${Math.ceil(hp)}/${maxHp}`, x, bpy+barH+10);
+
+  ctx.restore();
+}
+
+// ── Background Themes ─────────────────────────────────────────────────────────
+const BG_THEMES = {
+  plains:  { sky:['#1a2a6a','#2a5a9a'], ground:['#2a5a14','#1a3a0a'], accent:'#3a7a1a' },
+  desert:  { sky:['#3a2a0a','#6a4a1a'], ground:['#8a6a2a','#5a4a1a'], accent:'#9a7a3a' },
+  forest:  { sky:['#0a1a0a','#1a3a0a'], ground:['#1a3a08','#0a2008'], accent:'#2a4a12' },
+  snow:    { sky:['#0a1a2a','#1a3a4a'], ground:['#ccdde0','#a0b8bc'], accent:'#ddeeff' },
+  volcano: { sky:['#1a0a0a','#3a1010'], ground:['#3a1a0a','#2a0a04'], accent:'#8a2a0a' },
+  night:   { sky:['#030308','#05050f'], ground:['#0a0a14','#060610'], accent:'#1a1a2a' },
+};
+
+function drawBackground(theme, groundY){
+  const t = BG_THEMES[theme] || BG_THEMES.plains;
+
+  // sky gradient
+  const sg=ctx.createLinearGradient(0,0,0,groundY);
+  sg.addColorStop(0, t.sky[0]); sg.addColorStop(1, t.sky[1]);
+  ctx.fillStyle=sg; ctx.fillRect(0,0,W,groundY);
+
+  // stars (vary per theme)
+  if(theme==='night'||theme==='volcano'||theme==='forest'||theme==='snow'){
+    ctx.fillStyle='#ffffff';
+    for(let i=0;i<60;i++){
+      const sx=(i*137.5+23)%W, sy=(i*79.3)%(groundY*0.8);
+      const sr=0.4+((i*3)%5)*0.25;
+      ctx.globalAlpha=0.3+((i*7)%10)*0.07;
+      ctx.beginPath(); ctx.arc(sx,sy,sr,0,Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha=1;
+  }
+
+  // theme specific BG decoration
+  if(theme==='volcano'){
+    // lava glow at horizon
+    const lgrd=ctx.createLinearGradient(0,groundY-30,0,groundY);
+    lgrd.addColorStop(0,'transparent'); lgrd.addColorStop(1,'#ff440055');
+    ctx.fillStyle=lgrd; ctx.fillRect(0,groundY-30,W,30);
+    // volcano silhouettes
+    ctx.fillStyle='#1a0808';
+    [[W*0.15,0.4],[W*0.7,0.5],[W*0.45,0.3]].forEach(([vx,hr])=>{
+      ctx.beginPath();
+      ctx.moveTo(vx-60,groundY); ctx.lineTo(vx,groundY-groundY*hr); ctx.lineTo(vx+60,groundY);
+      ctx.closePath(); ctx.fill();
+    });
+  }
+  if(theme==='forest'){
+    ctx.fillStyle='#0a2008cc';
+    for(let i=0;i<8;i++){
+      const tx=(i*113+40)%W, th=40+((i*37)%50);
+      ctx.beginPath();
+      ctx.moveTo(tx-15,groundY); ctx.lineTo(tx,groundY-th); ctx.lineTo(tx+15,groundY);
+      ctx.closePath(); ctx.fill();
+    }
+  }
+  if(theme==='snow'){
+    // snow particles (static stars as flakes)
+    ctx.fillStyle='#ffffff88';
+    for(let i=0;i<25;i++){
+      const fx=(i*89+12)%W, fy=(i*67+20)%groundY;
+      ctx.beginPath(); ctx.arc(fx,fy,1,0,Math.PI*2); ctx.fill();
+    }
+  }
+
+  // ground
+  const gg=ctx.createLinearGradient(0,groundY,0,H);
+  gg.addColorStop(0,t.ground[0]); gg.addColorStop(0.2,t.ground[1]); gg.addColorStop(1,'#000');
+  ctx.fillStyle=gg; ctx.fillRect(0,groundY,W,H-groundY);
+
+  // ground line highlight
+  ctx.strokeStyle=t.accent; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(0,groundY); ctx.lineTo(W,groundY); ctx.stroke();
+
+  // path dashes
+  ctx.strokeStyle=t.accent+'44'; ctx.lineWidth=5;
+  ctx.setLineDash([14,10]);
+  ctx.beginPath(); ctx.moveTo(50,groundY+5); ctx.lineTo(W-50,groundY+5); ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── PARTICLES ─────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+class Particle{
+  constructor(x,y,color,vx,vy,life,r=3,type='dot'){
+    Object.assign(this,{x,y,color,vx,vy,life,maxLife:life,r,type});
+  }
+  update(dt){ this.x+=this.vx*dt; this.y+=this.vy*dt; this.vy+=180*dt; this.life-=dt; }
+  draw(){
+    const a=clamp(this.life/this.maxLife,0,1);
+    ctx.globalAlpha=a*a;
+    ctx.fillStyle=this.color;
+    if(this.type==='spark'){
+      ctx.strokeStyle=this.color; ctx.lineWidth=1.5; ctx.globalAlpha=a;
+      ctx.beginPath(); ctx.moveTo(this.x,this.y); ctx.lineTo(this.x-this.vx*0.05,this.y-this.vy*0.05); ctx.stroke();
+    } else {
+      ctx.beginPath(); ctx.arc(this.x,this.y,this.r*(0.4+a*0.6),0,Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha=1;
+  }
+  get dead(){ return this.life<=0; }
+}
+
+class TextPop{
+  constructor(x,y,text,color='#fff',size=13){
+    Object.assign(this,{x,y,text,color,size,life:1.2,maxLife:1.2,vy:-35});
+  }
+  update(dt){ this.y+=this.vy*dt; this.vy*=0.95; this.life-=dt; }
+  draw(){
+    const a=clamp(this.life/this.maxLife,0,1);
+    ctx.globalAlpha=a;
+    ctx.fillStyle=this.color;
+    ctx.font=`bold ${this.size}px Arial`;
+    ctx.textAlign='center';
+    ctx.shadowBlur=6; ctx.shadowColor='#000';
+    ctx.fillText(this.text,this.x,this.y);
+    ctx.shadowBlur=0; ctx.globalAlpha=1;
+  }
+  get dead(){ return this.life<=0; }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── PROJECTILE ────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+class Projectile{
+  constructor(x,y,tx,ty,dmg,color,speed,r,team){
+    this.x=x; this.y=y; this.team=team;
+    const dx=tx-x, dy=ty-y, d=Math.hypot(dx,dy)||1;
+    this.vx=dx/d*speed; this.vy=dy/d*speed;
+    this.dmg=dmg; this.color=color; this.r=r;
+    this.dead=false; this.dist=0;
+    this.maxDist=d+80;
+    this.trail=[];
+  }
+  update(dt){
+    this.trail.push({x:this.x,y:this.y});
+    if(this.trail.length>6) this.trail.shift();
+    this.x+=this.vx*dt; this.y+=this.vy*dt;
+    this.dist+=Math.hypot(this.vx*dt,this.vy*dt);
+    if(this.dist>this.maxDist+60) this.dead=true;
+  }
+  draw(){
+    // trail
+    this.trail.forEach((pt,i)=>{
+      const a=(i/this.trail.length)*0.4;
+      ctx.globalAlpha=a;
+      ctx.fillStyle=this.color;
+      ctx.beginPath(); ctx.arc(pt.x,pt.y,this.r*0.5,0,Math.PI*2); ctx.fill();
+    });
+    ctx.globalAlpha=1;
+    ctx.fillStyle=this.color;
+    ctx.shadowBlur=8; ctx.shadowColor=this.color;
+    ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fill();
+    ctx.shadowBlur=0;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── UNIT ──────────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+let uid=0;
+const UNIT_CFG={
+  warrior:  {name:'Warrior', cost:30, hp:120,dmg:18,spd:38,range:30, atkRate:1.0, pColor:'#4ac8ff',eColor:'#ff5555'},
+  archer:   {name:'Archer',  cost:50, hp:70, dmg:24,spd:28,range:130,atkRate:1.3, pColor:'#66ff88',eColor:'#ff8866'},
+  spearman: {name:'Spear',   cost:40, hp:90, dmg:22,spd:33,range:58, atkRate:1.1, pColor:'#ffdd66',eColor:'#dd88ff'},
+};
+
+class Unit{
+  constructor(type,team,x,groundY,upgMul={}){
+    this.id=++uid; this.type=type; this.team=team;
+    this.isBoss=false;
+    this.bossName='';
+    const c=UNIT_CFG[type];
+    const hpM=1+(upgMul.warrior_hp&&type==='warrior'?upgMul.warrior_hp:0);
+    const sM =1+(upgMul.spearman_spd&&type==='spearman'?upgMul.spearman_spd:0);
+    const dM =1+(upgMul.archer_dmg&&type==='archer'?upgMul.archer_dmg:0);
+    this.hp=Math.round(c.hp*hpM); this.maxHp=this.hp;
+    this.dmg=Math.round(c.dmg*(team==='enemy'?1:dM));
+    this.spd=c.spd*(team==='enemy'?1:sM);
+    this.range=c.range; this.atkRate=c.atkRate;
+    this.atkCool=rnd(0,0.6);
+    this.x=x; this.groundY=groundY;
+    this.dir=team==='player'?1:-1;
+    this.anim=rnd(0,6);
+    this.dead=false; this.hitFlash=0;
+    this.state='walk'; this.target=null;
+    this.color=team==='player'?c.pColor:c.eColor;
+    this.kills=0;
+  }
+  get feetY(){ return this.groundY; }
+
+  update(dt,gs){
+    if(this.dead) return;
+    this.hitFlash=Math.max(0,this.hitFlash-dt*5);
+    this.atkCool=Math.max(0,this.atkCool-dt);
+    this.anim+=dt;
+
+    const enemies=this.team==='player'?gs.enemyUnits:gs.playerUnits;
+    let best=null, bestD=Infinity;
+    for(const e of enemies){
+      if(e.dead) continue;
+      const d=Math.abs(e.x-this.x);
+      if(d<bestD){bestD=d;best=e;}
+    }
+    this.target=best;
+    const eBase=this.team==='player'?gs.enemyBase:gs.playerBase;
+    const eDist=Math.abs(eBase.x-this.x);
+
+    if(best&&bestD<=this.range){
+      this.state='fight';
+      if(this.atkCool<=0){ this.attack(best,gs); this.atkCool=1/this.atkRate; }
+    } else if(!best&&eDist<=this.range+14){
+      this.state='fight';
+      if(this.atkCool<=0){ eBase.hp-=this.dmg; gs.spawnHitFx(eBase.x,eBase.y-36,this.color,3); this.atkCool=1/this.atkRate; }
+    } else {
+      this.state='walk';
+      this.x+=this.dir*this.spd*dt;
+    }
+  }
+
+  attack(target,gs){
+    if(this.type==='archer'){
+      gs.projectiles.push(new Projectile(this.x,this.feetY-14,target.x,target.feetY-14,this.dmg,this.color,330,3.5,this.team));
+    } else {
+      target.takeDmg(this.dmg,gs,this);
+      gs.spawnHitFx(target.x,target.feetY-10,this.color,5);
+    }
+  }
+
+  takeDmg(amount,gs,attacker){
+    this.hp-=amount; this.hitFlash=1;
+    if(this.hp<=0){this.hp=0;this.dead=true;gs.onUnitDead(this,attacker);}
+  }
+
+  draw(){
+    if(this.dead) return;
+    if(this.isBoss){
+      ctx.save();
+      // Scale boss 1.6x around feet
+      ctx.translate(this.x, this.feetY);
+      ctx.scale(1.6, 1.6);
+      ctx.translate(-this.x, -this.feetY);
+      drawStickman(this.x,this.feetY,this.color,this.dir,this.anim,this.type,this.hitFlash>0);
+      
+      // Crown on head
+      const R = 11;
+      const headR = R * 0.53;
+      const tH = R * 1.25;
+      const headY = this.feetY - tH - headR * 2;
+      ctx.fillStyle = '#ffd700';
+      ctx.strokeStyle = '#e69500';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(this.x - 7, headY);
+      ctx.lineTo(this.x - 9, headY - 8);
+      ctx.lineTo(this.x - 3, headY - 4);
+      ctx.lineTo(this.x, headY - 11);
+      ctx.lineTo(this.x + 3, headY - 4);
+      ctx.lineTo(this.x + 9, headY - 8);
+      ctx.lineTo(this.x + 7, headY);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = '#ff2222';
+      ctx.beginPath();
+      ctx.arc(this.x, headY - 4, 1.5, 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+
+      // Boss Big Floating HP Bar + Title
+      const bw=64, bh=7, bx=this.x-bw/2, by=this.feetY-80;
+      ctx.fillStyle='#000000dd'; ctx.fillRect(bx-1,by-1,bw+2,bh+2);
+      const p=clamp(this.hp/this.maxHp,0,1);
+      const grad=ctx.createLinearGradient(bx,by,bx+bw,by);
+      grad.addColorStop(0,'#ff2244'); grad.addColorStop(1,'#ff9900');
+      ctx.fillStyle=grad;
+      if(bw*p>0) ctx.fillRect(bx,by,bw*p,bh);
+      ctx.strokeStyle='#ffd700'; ctx.lineWidth=1;
+      ctx.strokeRect(bx-1,by-1,bw+2,bh+2);
+
+      ctx.fillStyle='#ffe066';
+      ctx.font='bold 9px Arial';
+      ctx.textAlign='center';
+      ctx.shadowBlur=4; ctx.shadowColor='#000';
+      ctx.fillText(`👑 ${this.bossName || 'BOSS'}`, this.x, by - 4);
+      ctx.shadowBlur=0;
+    } else {
+      drawStickman(this.x,this.feetY,this.color,this.dir,this.anim,this.type,this.hitFlash>0);
+      // HP bar
+      const bw=26,bh=4,bx=this.x-bw/2,by=this.feetY-42;
+      ctx.fillStyle='#000000aa'; ctx.fillRect(bx,by,bw,bh);
+      const p=clamp(this.hp/this.maxHp,0,1);
+      ctx.fillStyle=p>.5?'#44ff66':p>.25?'#ffcc00':'#ff3333';
+      if(bw*p>0) ctx.fillRect(bx,by,bw*p,bh);
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── BASE OBJECT ───────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+class BaseObj{
+  constructor(x,y,hp,color,label,dir){
+    this.x=x;this.y=y;this.hp=hp;this.maxHp=hp;
+    this.color=color;this.label=label;this.dir=dir;this.dead=false;
+  }
+  update(dt){ if(this.hp<=0){this.hp=0;this.dead=true;} }
+  draw(){ drawCastle(this.x,this.y,this.color,this.hp,this.maxHp,this.label,this.dir); }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── GAME STATE ────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+class GameState{
+  constructor(levelId){
+    this.levelId=levelId;
+    this.level=LEVELS.find(l=>l.id===levelId);
+    this.groundY=H*0.72;
+    this.theme=this.level.bg;
+
+    // upgrades multipliers
+    const p=session.profile;
+    this.upgMul={
+      warrior_hp: getUpgradeVal('warrior_hp',p),
+      archer_dmg: getUpgradeVal('archer_dmg',p),
+      spearman_spd: getUpgradeVal('spearman_spd',p),
+    };
+    const baseHpBonus=getUpgradeVal('base_hp',p);
+    const startCoinsBonus=getUpgradeVal('start_coins',p);
+    const coinRateBonus=getUpgradeVal('coinRate',p);
+
+    this.playerBase=new BaseObj(46,this.groundY,this.level.baseHp+baseHpBonus,'#2266cc','MY BASE',1);
+    this.enemyBase =new BaseObj(W-46,this.groundY,this.level.baseHp*1.2,'#cc2222','ENEMY',-1);
+    this.playerUnits=[]; this.enemyUnits=[];
+    this.projectiles=[]; this.particles=[]; this.textPops=[];
+    this.coins=80+startCoinsBonus;
+    this.coinTimer=0;
+    this.coinRate=(1.1+coinRateBonus)*(this.level.coinMul||1);
+    this.wave=1; this.maxWaves=this.level.waves;
+    this.waveTimer=0; this.waveCooldown=16;
+    this.waveActive=false;
+    this.enemySpawnQueue=[]; this.enemySpawnTimer=0;
+    this.gameOver=false; this.won=false;
+    this.elapsed=0;
+    this.totalKills=0;
+    this.buildUI();
+    this.startWave();
+  }
+
+  onResize(){
+    this.groundY=H*0.72;
+    this.playerBase.y=this.groundY;
+    this.enemyBase.y=this.groundY;
+    this.enemyBase.x=W-46;
+    this.buildUI();
+  }
+
+  buildUI(){
+    const uib=document.getElementById('ui-bottom');
+    uib.classList.remove('hidden');
+    uib.innerHTML='';
+    const bar=document.createElement('div');
+    bar.className='unit-bar';
+
+    // Home / Menu button
+    const homeBtn=document.createElement('button');
+    homeBtn.className='unit-btn';
+    homeBtn.style.cssText='max-width:44px;flex:none;font-size:1.1em;padding:10px 4px;';
+    homeBtn.innerHTML='🏠<br><span style="font-size:0.6em;color:#aaa;">MENU</span>';
+    homeBtn.onclick=()=>{
+      if(confirm('Keluar ke menu utama? Pertempuran saat ini akan berhenti.')){
+        gs.gameOver=true;
+        showScreen('screen-menu');
+      }
+    };
+    bar.appendChild(homeBtn);
+
+    ['warrior','archer','spearman'].forEach(t=>{
+      const c=UNIT_CFG[t];
+      const btn=document.createElement('button');
+      btn.className='unit-btn'; btn.id='ubtn_'+t;
+      btn.innerHTML=`<span class="icon">${t==='warrior'?'⚔️':t==='archer'?'🏹':'🗡️'}</span><span>${c.name}</span><span class="cost">${c.cost}🪙</span>`;
+      let handledTouch=false;
+      btn.addEventListener('touchstart',e=>{
+        e.preventDefault();
+        handledTouch=true;
+        this.spawnPlayer(t);
+      },{passive:false});
+      btn.addEventListener('click',e=>{
+        if(handledTouch){ handledTouch=false; return; }
+        this.spawnPlayer(t);
+      });
+      bar.appendChild(btn);
+    });
+    uib.appendChild(bar);
+    this.refreshButtons();
+  }
+
+  refreshButtons(){
+    ['warrior','archer','spearman'].forEach(t=>{
+      const btn=document.getElementById('ubtn_'+t);
+      if(!btn) return;
+      const ok=this.coins>=UNIT_CFG[t].cost;
+      btn.classList.toggle('cant-afford',!ok);
+    });
+  }
+
+  spawnPlayer(type){
+    if(this.gameOver) return;
+    const c=UNIT_CFG[type];
+    if(this.coins<c.cost) return;
+    this.coins-=c.cost;
+    const u=new Unit(type,'player',this.playerBase.x+25,this.groundY,this.upgMul);
+    this.playerUnits.push(u);
+    this.textPops.push(new TextPop(u.x,u.feetY-50,`-${c.cost}`,'#fc0'));
+    this.refreshButtons();
+  }
+
+  startWave(){
+    this.waveActive=true; this.waveTimer=0;
+    const lv=this.level;
+    const count=Math.floor(3+this.wave*2.2+(this.wave>3?this.wave:0));
+    const pool=['warrior','warrior','archer','spearman'];
+    this.enemySpawnQueue=[];
+    for(let i=0;i<count;i++){
+      const maxPool=Math.min(pool.length,1+Math.floor((this.wave+lv.id)/2));
+      this.enemySpawnQueue.push({ type: pool[Math.floor(Math.random()*maxPool)], isBoss: false });
+    }
+    // If it's a boss level and the final wave, enqueue the Boss unit!
+    if(lv.isBoss && this.wave === this.maxWaves){
+      this.enemySpawnQueue.push({ type: 'warrior', isBoss: true, bossName: lv.bossName });
+      this.textPops.push(new TextPop(W/2, this.groundY-115, `👑 BOSS DEKATI: ${lv.bossName.toUpperCase()}!`, '#ff2244', 18));
+    }
+    this.enemySpawnTimer=0.8;
+    this.textPops.push(new TextPop(W/2,this.groundY-90,`⚠ WAVE ${this.wave}/${this.maxWaves}!`,(lv.isBoss && this.wave === this.maxWaves)?'#ff2244':'#ff8800',15));
+  }
+
+  spawnEnemy(item){
+    const type = (typeof item === 'object') ? item.type : item;
+    const isBoss = (typeof item === 'object') ? !!item.isBoss : false;
+    const bossName = (typeof item === 'object') ? item.bossName : '';
+    const c=UNIT_CFG[type] || UNIT_CFG.warrior;
+    const lv=this.level;
+    const u=new Unit(type,'enemy',this.enemyBase.x-28,this.groundY,{});
+    const wScale=1+(this.wave-1)*0.2;
+    if(isBoss){
+      u.isBoss = true;
+      u.bossName = bossName || 'BOSS';
+      u.color = '#ff1133';
+      u.hp = Math.round(c.hp * lv.enemyHpMul * wScale * 3.8);
+      u.maxHp = u.hp;
+      u.dmg = Math.round(c.dmg * lv.enemyDmgMul * 1.8);
+      u.spd = Math.round(c.spd * 0.82);
+      u.range = Math.round(c.range * 1.3);
+    } else {
+      u.hp=Math.round(c.hp*lv.enemyHpMul*wScale);
+      u.maxHp=u.hp;
+      u.dmg=Math.round(c.dmg*lv.enemyDmgMul*(1+(this.wave-1)*0.1));
+    }
+    this.enemyUnits.push(u);
+  }
+
+  onUnitDead(unit,attacker){
+    if(unit.team==='enemy'){
+      let reward=Math.floor(rnd(8,18)*(0.8+this.wave*0.1));
+      if(unit.isBoss){
+        reward = Math.floor(rnd(60,120)*(1+this.levelId*0.06));
+        this.textPops.push(new TextPop(unit.x,unit.feetY-65,`👑 BOSS DEFEATED! +${reward} 💎`,'#ffd700',16));
+        if(session && session.profile){
+          session.profile.gems = (session.profile.gems || 0) + 15;
+          saveProfile();
+        }
+      } else {
+        this.textPops.push(new TextPop(unit.x,unit.feetY-46,`+${reward}`,'#ffff44'));
+      }
+      this.coins=Math.min(this.coins+reward,9999);
+      this.totalKills++;
+      if(attacker) attacker.kills++;
+    }
+    if(unit.isBoss){
+      for(let k=0; k<4; k++){
+        this.spawnDeathFx(unit.x + rnd(-20,20), unit.feetY + rnd(-30,0), '#ffd700');
+      }
+    }
+    this.spawnDeathFx(unit.x,unit.feetY,unit.color);
+  }
+
+  spawnHitFx(x,y,color,n=4){
+    for(let i=0;i<n;i++){
+      this.particles.push(new Particle(x,y,color,rnd(-80,80),rnd(-120,-20),rnd(0.25,0.5),2,'spark'));
+    }
+    this.particles.push(new Particle(x,y,'#fff8',rnd(-30,30),rnd(-80,-20),0.2,3));
+  }
+
+  spawnDeathFx(x,y,color){
+    for(let i=0;i<12;i++){
+      this.particles.push(new Particle(x,y,color,rnd(-100,100),rnd(-180,-30),rnd(0.5,1.0),rnd(2,4),'dot'));
+    }
+    this.particles.push(new Particle(x,y,'#fff',0,-80,0.35,5));
+    for(let i=0;i<6;i++){
+      this.particles.push(new Particle(x,y,color,rnd(-60,60),rnd(-60,0),rnd(0.4,0.8),1.5,'spark'));
+    }
+  }
+
+  update(dt){
+    if(this.gameOver) return;
+    this.elapsed+=dt;
+
+    // coins
+    this.coinTimer+=dt;
+    if(this.coinTimer>=1/this.coinRate){ this.coinTimer-=1/this.coinRate; this.coins=Math.min(this.coins+1,9999); }
+
+    // enemy spawn
+    if(this.enemySpawnQueue.length>0){
+      this.enemySpawnTimer-=dt;
+      if(this.enemySpawnTimer<=0){
+        this.spawnEnemy(this.enemySpawnQueue.shift());
+        this.enemySpawnTimer=Math.max(0.6,1.8-this.wave*0.08);
+      }
+    }
+
+    // wave end
+    if(this.waveActive&&this.enemySpawnQueue.length===0&&this.enemyUnits.every(u=>u.dead)){
+      this.waveActive=false; this.waveTimer=0;
+      session.profile.stats.wavesCleared=(session.profile.stats.wavesCleared||0)+1;
+      if(this.wave>=this.maxWaves){
+        // all waves done — check if any enemy alive, if not win soon
+        setTimeout(()=>{ if(!this.gameOver) this.endGame(true); },1000);
+      }
+    }
+
+    if(!this.waveActive&&this.wave<this.maxWaves){
+      this.waveTimer+=dt;
+      if(this.waveTimer>=this.waveCooldown){
+        this.wave++;
+        this.waveCooldown=Math.max(8,this.waveCooldown-1);
+        this.startWave();
+      }
+    }
+
+    // units
+    for(const u of this.playerUnits) u.update(dt,this);
+    for(const u of this.enemyUnits)  u.update(dt,this);
+    this.playerUnits=this.playerUnits.filter(u=>!u.dead);
+    this.enemyUnits =this.enemyUnits.filter(u=>!u.dead);
+
+    // projectiles
+    for(const p of this.projectiles){
+      p.update(dt);
+      if(p.dead) continue;
+      const tgts=p.team==='player'?this.enemyUnits:this.playerUnits;
+      for(const t of tgts){
+        if(t.dead) continue;
+        if(Math.hypot(t.x-p.x,(t.feetY-14)-p.y)<20){
+          t.takeDmg(p.dmg,this,null);
+          this.spawnHitFx(p.x,p.y,p.color,4);
+          p.dead=true; break;
+        }
+      }
+      if(!p.dead){
+        const eb=p.team==='player'?this.enemyBase:this.playerBase;
+        if(Math.hypot(eb.x-p.x,(eb.y-36)-p.y)<32){ eb.hp-=p.dmg; this.spawnHitFx(p.x,p.y,p.color,3); p.dead=true; }
+      }
+    }
+    this.projectiles=this.projectiles.filter(p=>!p.dead);
+
+    for(const p of this.particles) p.update(dt);
+    this.particles=this.particles.filter(p=>!p.dead);
+    for(const t of this.textPops) t.update(dt);
+    this.textPops=this.textPops.filter(t=>!t.dead);
+
+    this.playerBase.update(dt);
+    this.enemyBase.update(dt);
+
+    if(!this.gameOver){
+      if(this.enemyBase.dead) this.endGame(true);
+      if(this.playerBase.dead) this.endGame(false);
+    }
+    this.refreshButtons();
+  }
+
+  endGame(won){
+    this.gameOver = true;
+    this.won = won;
+
+    const uib = document.getElementById('ui-bottom');
+    if(uib) uib.classList.add('hidden');
+
+    try {
+      if(!session){
+        session = { username: 'Guest', profile: DEFAULT_PROFILE() };
+      }
+      if(!session.profile) session.profile = DEFAULT_PROFILE();
+      const p = session.profile;
+      if(!p.stats) p.stats = { gamesPlayed:0, wins:0, kills:0, wavesCleared:0 };
+      if(!p.levels) p.levels = {};
+
+      p.stats.gamesPlayed = (p.stats.gamesPlayed || 0) + 1;
+      const t = Math.max(1, Math.round(this.elapsed));
+
+      const goResult = document.getElementById('go-result');
+      const goStars = document.getElementById('go-stars');
+      const goDetails = document.getElementById('go-details');
+      const nextBtn = document.getElementById('go-next');
+
+      if(won){
+        p.stats.wins = (p.stats.wins || 0) + 1;
+        p.stats.kills = (p.stats.kills || 0) + this.totalKills;
+
+        const stars = t < 50 ? 3 : t < 100 ? 2 : 1;
+        const gemReward = stars * 3 + (this.level ? this.level.id * 2 : 5);
+        p.gems = (p.gems || 0) + gemReward;
+
+        const prev = p.levels[this.levelId];
+        if(!prev || prev.stars < stars){
+          p.levels[this.levelId] = { stars, time: t };
+        }
+        saveProfile();
+        refreshMenuStats();
+
+        if(goResult){
+          goResult.textContent = '🏆 KEMENANGAN (VICTORY)!';
+          goResult.style.color = '#55ff55';
+        }
+        if(goStars){
+          goStars.textContent = '★'.repeat(stars) + '☆'.repeat(3 - stars);
+          goStars.style.color = '#ffe066';
+        }
+        if(goDetails){
+          goDetails.innerHTML = `Base Musuh Berhasil Dihancurkan!<br><span style="color:#ffe066;font-weight:bold;">+${gemReward} 💎 Gems Didapat</span><br>Musuh Gugur: ${this.totalKills} · Waktu: ${t}s`;
+        }
+        if(nextBtn){
+          const nextLvl = LEVELS.find(l => l.id === this.levelId + 1);
+          if(nextLvl){
+            nextBtn.classList.remove('hidden');
+            nextBtn.style.display = 'block';
+            nextBtn.textContent = `▶ LANJUT LEVEL ${nextLvl.id}`;
+          } else {
+            nextBtn.classList.add('hidden');
+            nextBtn.style.display = 'none';
+          }
+        }
+      } else {
+        if(goResult){
+          goResult.textContent = '💀 KALAH (DEFEAT)!';
+          goResult.style.color = '#ff5555';
+        }
+        if(goStars){
+          goStars.textContent = '';
+        }
+        if(goDetails){
+          goDetails.innerHTML = `Base Kamu Hancur di Wave ${this.wave}/${this.maxWaves}!<br>Musuh Gugur: ${this.totalKills} · Bertahan: ${t}s`;
+        }
+        if(nextBtn){
+          nextBtn.classList.add('hidden');
+          nextBtn.style.display = 'none';
+        }
+        saveProfile();
+      }
+    } catch(err) {
+      console.error('endGame error handled safely:', err);
+    }
+
+    showScreen('screen-gameover');
+  }
+
+  draw(){
+    drawBackground(this.theme, this.groundY);
+    this.playerBase.draw();
+    this.enemyBase.draw();
+    for(const u of this.enemyUnits)  u.draw();
+    for(const u of this.playerUnits) u.draw();
+    for(const p of this.projectiles) p.draw();
+    for(const p of this.particles)   p.draw();
+    for(const t of this.textPops)    t.draw();
+    this.drawHUD();
+  }
+
+  drawHUD(){
+    // top bar bg
+    ctx.fillStyle='rgba(4,8,20,0.82)';
+    ctx.fillRect(0,0,W,50);
+    ctx.strokeStyle='#1a2a4a'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(0,50); ctx.lineTo(W,50); ctx.stroke();
+
+    // Coins
+    ctx.fillStyle='#ffe066'; ctx.font='bold 13px Arial'; ctx.textAlign='left';
+    ctx.shadowBlur=4; ctx.shadowColor='#f80';
+    ctx.fillText(`🪙 ${Math.floor(this.coins)}`, 10, 22);
+    ctx.shadowBlur=0;
+
+    // Level name
+    ctx.fillStyle='#7af'; ctx.font='10px Arial'; ctx.textAlign='left';
+    ctx.fillText(`Lv.${this.levelId} ${this.level.name}`, 10, 38);
+
+    // Wave
+    const isBossWave = this.level.isBoss && this.wave === this.maxWaves;
+    ctx.fillStyle = isBossWave ? '#ff3344' : '#ff8800';
+    ctx.font = 'bold 14px Arial'; ctx.textAlign = 'center';
+    ctx.shadowBlur = 6; ctx.shadowColor = isBossWave ? '#f00' : '#f80';
+    ctx.fillText(isBossWave ? `👑 BOSS WAVE ${this.wave}/${this.maxWaves}` : `WAVE ${this.wave}/${this.maxWaves}`, W/2, 22);
+    ctx.shadowBlur = 0;
+
+    if(!this.waveActive){
+      const rem=Math.ceil(this.waveCooldown-this.waveTimer);
+      ctx.fillStyle='#89a'; ctx.font='10px Arial';
+      ctx.fillText(`Next wave in ${rem}s`, W/2, 38);
+    } else {
+      ctx.fillStyle = isBossWave ? '#ff2244' : '#ff6622';
+      ctx.font = 'bold 10px Arial';
+      ctx.fillText(isBossWave ? `👑 ${this.level.bossName.toUpperCase()} MENYERANG!` : '⚠ UNDER ATTACK!', W/2, 38);
+    }
+
+    // Time + units
+    ctx.fillStyle='#acd'; ctx.font='bold 12px Arial'; ctx.textAlign='right';
+    ctx.fillText(`${Math.floor(this.elapsed)}s`, W-10, 22);
+    ctx.fillStyle='#89a'; ctx.font='10px Arial';
+    ctx.fillText(`⚔${this.playerUnits.length} 🔴${this.enemyUnits.length}`, W-10, 38);
+
+    ctx.textAlign='left';
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── NAVIGATION HELPERS ────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+function startLevel(id){
+  currentLevelId=id;
+  retryLevel();
+}
+
+function retryLevel(){
+  if(!session){
+    doGuest();
+  }
+  document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
+  const uib = document.getElementById('ui-bottom');
+  if(uib) uib.classList.remove('hidden');
+  gs=new GameState(currentLevelId);
+}
+
+function goNextLevel(){
+  const next=LEVELS.find(l=>l.id===currentLevelId+1);
+  if(next) startLevel(next.id);
+  else showScreen('screen-menu');
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── MASTER GAME LOOP ──────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+let lastTime=0;
+function masterLoop(ts=0){
+  requestAnimationFrame(masterLoop);
+  const dt=Math.min((ts-lastTime)/1000, 0.05);
+  lastTime=ts;
+
+  ctx.clearRect(0,0,W,H);
+  if(gs && !gs.gameOver){
+    gs.update(dt);
+    gs.draw();
+  } else if(gs && gs.gameOver){
+    gs.draw();
+  } else {
+    // Menu background animation
+    ctx.fillStyle='#0a0a1a';
+    ctx.fillRect(0,0,W,H);
+    const t=ts/1000;
+    ctx.fillStyle='#ffffff';
+    for(let i=0;i<60;i++){
+      const sx=(i*137.5)%W, sy=(i*79.3)%H;
+      ctx.globalAlpha=0.2+Math.sin(t*2+i)*0.15;
+      ctx.beginPath();
+      ctx.arc(sx,sy,0.6+((i%3)*0.3),0,Math.PI*2);
+      ctx.fill();
+    }
+    ctx.globalAlpha=1;
+    ctx.fillStyle='#ffe066';
+    ctx.font='bold 28px Arial';
+    ctx.textAlign='center';
+    ctx.shadowBlur=16;
+    ctx.shadowColor='#f806';
+    ctx.fillText('⚔️ STICKMAN WAR', W/2, H*0.18+Math.sin(t)*4);
+    ctx.shadowBlur=0;
+  }
+}
+requestAnimationFrame(masterLoop);
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── INIT ──────────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+showScreen('screen-login');
+try{
+  const lastU = localStorage.getItem('stickmwar_last_user');
+  if(lastU && document.getElementById('l-user')) {
+    document.getElementById('l-user').value = lastU;
+  }
+}catch(e){}
+
+// Re-build level grid whenever levels screen shown
+const _origShowScreen = showScreen;
+window.showScreen = function(id){
+  _origShowScreen(id);
+  if(id==='screen-levels') buildLevelGrid();
+  if(id==='screen-menu') refreshMenuStats();
+};
+
+// Keyboard shortcut helpers
+document.addEventListener('keydown', e=>{
+  if(!gs || gs.gameOver) return;
+  if(e.key==='1') gs.spawnPlayer('warrior');
+  if(e.key==='2') gs.spawnPlayer('archer');
+  if(e.key==='3') gs.spawnPlayer('spearman');
+});
+</script>
+</body>
+</html>
