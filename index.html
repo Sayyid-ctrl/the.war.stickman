@@ -34,24 +34,36 @@ input:focus{border-color:#5af;}
 .info{color:#7af;font-size:.82em;text-align:center;margin-top:8px;}
 
 /* ── HUD overlay on canvas ── */
+#ui-top{position:absolute;top:52px;left:50%;transform:translateX(-50%);width:100%;max-width:420px;pointer-events:auto;z-index:100;}
 #ui-bottom{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;pointer-events:auto;z-index:100;}
-.unit-bar{display:flex;gap:8px;justify-content:center;padding:8px 8px 16px;background:rgba(6,10,24,0.88);border-top:1px solid #1a2a4a;}
-.unit-btn{flex:1;max-width:108px;background:linear-gradient(160deg,#0d1a2e,#162440);border:1.5px solid #2a4060;border-radius:14px;padding:8px 4px 6px;cursor:pointer;color:#cdf;font-size:.7em;font-weight:700;line-height:1.5;transition:all .1s;position:relative;outline:none;}
-.unit-btn:active{transform:scale(0.95);}
-.unit-btn.cant-afford{opacity:.4;border-color:#333;cursor:not-allowed;}
+.unit-bar{display:flex;gap:8px;justify-content:center;padding:8px 8px 16px;background:rgba(4,6,18,0.92);border-top:2px solid #1a3a6a;backdrop-filter:blur(4px);}
+.unit-btn{flex:1;max-width:108px;background:linear-gradient(160deg,#0d1a2e,#162440);border:1.5px solid #2a4060;border-radius:14px;padding:8px 4px 6px;cursor:pointer;color:#cdf;font-size:.7em;font-weight:700;line-height:1.5;transition:all .15s;position:relative;outline:none;box-shadow:0 2px 8px #0008;}
+.unit-btn:active{transform:scale(0.93);box-shadow:0 0 12px #4af8;}
+.unit-btn:hover:not(.cant-afford){border-color:#5af;box-shadow:0 0 14px #4af6;}
+.unit-btn.cant-afford{opacity:.35;border-color:#222;cursor:not-allowed;}
 .unit-btn .cost{color:#fc0;font-weight:900;}
 .unit-btn .icon{font-size:1.5em;display:block;}
 
 /* ── Level Select ── */
 .level-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;width:100%;}
-.lvl-btn{background:linear-gradient(135deg,#0d1a2e,#162440);border:2px solid #2a4060;border-radius:12px;padding:12px 4px;cursor:pointer;color:#cdf;font-size:.75em;text-align:center;transition:all .12s;width:100%;outline:none;}
-.lvl-btn:active{transform:scale(0.96);}
-.lvl-btn:disabled,.lvl-btn.locked{opacity:.4;cursor:not-allowed;}
+.lvl-btn{background:linear-gradient(135deg,#0d1a2e,#162440);border:2px solid #2a4060;border-radius:12px;padding:12px 4px;cursor:pointer;color:#cdf;font-size:.75em;text-align:center;transition:all .15s;width:100%;outline:none;box-shadow:0 2px 6px #0006;}
+.lvl-btn:active{transform:scale(0.94);}
+.lvl-btn:hover:not(:disabled){border-color:#5af;box-shadow:0 0 12px #4af5;}
+.lvl-btn:disabled,.lvl-btn.locked{opacity:.35;cursor:not-allowed;}
 .lvl-btn.completed{border-color:#2a8a2a;background:linear-gradient(135deg,#0a200a,#0a3a12);}
 .lvl-btn.completed .stars{color:#fc0;}
-.lvl-btn.boss-level{border-color:#ff3344;background:linear-gradient(135deg,#2b0b14,#44101e);box-shadow:0 0 10px rgba(255,34,68,0.25);}
-.lvl-btn.boss-level.completed{border-color:#ffd700;background:linear-gradient(135deg,#2b1f0b,#4a3410);box-shadow:0 0 10px rgba(255,215,0,0.3);}
+.lvl-btn.boss-level{border-color:#ff3344;background:linear-gradient(135deg,#2b0b14,#44101e);box-shadow:0 0 14px rgba(255,34,68,0.35);animation:boss-pulse 2s ease-in-out infinite;}
+.lvl-btn.boss-level.completed{border-color:#ffd700;background:linear-gradient(135deg,#2b1f0b,#4a3410);box-shadow:0 0 12px rgba(255,215,0,0.35);animation:boss-pulse-gold 2s ease-in-out infinite;}
 .lvl-btn .lvl-num{font-size:1.4em;font-weight:900;color:#ffe066;}
+
+@keyframes boss-pulse{
+  0%,100%{box-shadow:0 0 10px rgba(255,34,68,0.3);}
+  50%{box-shadow:0 0 22px rgba(255,34,68,0.7),0 0 40px rgba(255,0,0,0.2);}
+}
+@keyframes boss-pulse-gold{
+  0%,100%{box-shadow:0 0 10px rgba(255,215,0,0.3);}
+  50%{box-shadow:0 0 22px rgba(255,215,0,0.7),0 0 40px rgba(255,200,0,0.2);}
+}
 
 /* ── Shop ── */
 .shop-item{background:linear-gradient(135deg,#0d1a2e,#131e30);border:1.5px solid #2a3a5a;border-radius:12px;padding:12px;margin-bottom:10px;display:flex;align-items:center;gap:10px;}
@@ -68,10 +80,22 @@ input:focus{border-color:#5af;}
 .tab-bar{display:flex;gap:6px;margin-bottom:16px;width:100%;}
 .tab{flex:1;padding:9px;border:1.5px solid #2a3a5a;border-radius:10px;background:#0d1525;color:#78a;font-size:.8em;font-weight:700;cursor:pointer;text-align:center;transition:all .12s;}
 .tab.active{background:#1a2a4a;border-color:#5af;color:#adf;}
+
+/* ── Skills ── */
+.skill-bar{display:flex;gap:6px;justify-content:center;align-items:center;padding:5px 8px 6px;background:rgba(4,6,18,0.92);border-bottom:1.5px solid #2a1a4a;border-radius:0 0 14px 14px;box-shadow:0 4px 16px rgba(0,0,0,0.5);backdrop-filter:blur(6px);}
+.skill-btn{flex:1;max-width:90px;position:relative;background:linear-gradient(160deg,#1a0d2e,#2a1040);border:1.5px solid #5a2a9a;border-radius:12px;padding:6px 2px 5px;cursor:pointer;color:#ddf;font-size:.65em;font-weight:700;text-align:center;transition:all .15s;outline:none;overflow:hidden;}
+.skill-btn:active{transform:scale(0.93);}
+.skill-btn.on-cd{opacity:.55;cursor:not-allowed;}
+.skill-btn .s-icon{font-size:1.45em;display:block;line-height:1.2;}
+.skill-btn .s-cd{position:absolute;bottom:0;left:0;width:100%;height:3px;background:#5500aa;border-radius:0 0 10px 10px;transition:width .1s linear;}
+.skill-btn .s-cdtxt{color:#bb88ff;font-size:.75em;}
+.skill-btn.ready{border-color:#aa55ff;box-shadow:0 0 10px rgba(170,85,255,0.5);animation:skill-glow .8s ease-in-out infinite alternate;}
+@keyframes skill-glow{from{box-shadow:0 0 6px rgba(170,85,255,0.4);}to{box-shadow:0 0 18px rgba(170,85,255,0.9),0 0 32px rgba(100,0,255,0.3);}}
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
+<div id="ui-top" class="hidden"></div>
 <div id="ui-bottom" class="hidden"></div>
 
 <!-- ══ SCREEN: LOGIN ══════════════════════════════════════════════════════ -->
@@ -247,46 +271,46 @@ function getUpgradeVal(effect, profile){
 // ── Campaign levels (30 Levels, Boss every multiple of 5) ────────────────────
 const LEVELS = [
   // Realm 1: Plains (Levels 1 - 5)
-  { id:1,  name:'Green Plains',       bg:'plains',  waves:3, enemyHpMul:1.0, enemyDmgMul:1.0, coinMul:1.0, baseHp:400, desc:'Tutorial medan perang' },
-  { id:2,  name:'Windy Steppe',       bg:'plains',  waves:4, enemyHpMul:1.1, enemyDmgMul:1.05, coinMul:1.1, baseHp:430, desc:'Pasukan perompak' },
-  { id:3,  name:'River Crossing',     bg:'plains',  waves:4, enemyHpMul:1.2, enemyDmgMul:1.1, coinMul:1.15, baseHp:460, desc:'Pertahankan jembatan' },
-  { id:4,  name:'Outpost Outskirts',  bg:'plains',  waves:5, enemyHpMul:1.35, enemyDmgMul:1.15, coinMul:1.2, baseHp:500, desc:'Garis depan musuh' },
-  { id:5,  name:'Goblin King Throne', bg:'plains',  waves:5, enemyHpMul:1.5, enemyDmgMul:1.25, coinMul:1.4, baseHp:600, desc:'👑 BOSS: Goblin King', isBoss:true, bossName:'Goblin King' },
+  { id:1,  name:'Green Plains',       bg:'plains',  waves:2, enemyHpMul:1.0, enemyDmgMul:1.0, coinMul:1.0, baseHp:400, desc:'Tutorial medan perang' },
+  { id:2,  name:'Windy Steppe',       bg:'plains',  waves:2, enemyHpMul:1.1, enemyDmgMul:1.05, coinMul:1.1, baseHp:430, desc:'Pasukan perompak' },
+  { id:3,  name:'River Crossing',     bg:'plains',  waves:2, enemyHpMul:1.2, enemyDmgMul:1.1, coinMul:1.15, baseHp:460, desc:'Pertahankan jembatan' },
+  { id:4,  name:'Outpost Outskirts',  bg:'plains',  waves:2, enemyHpMul:1.35, enemyDmgMul:1.15, coinMul:1.2, baseHp:500, desc:'Garis depan musuh' },
+  { id:5,  name:'Goblin King Throne', bg:'plains',  waves:2, enemyHpMul:1.5, enemyDmgMul:1.25, coinMul:1.4, baseHp:600, desc:'👑 BOSS: Goblin King', isBoss:true, bossName:'Goblin King' },
 
   // Realm 2: Desert (Levels 6 - 10)
-  { id:6,  name:'Dune Outskirts',     bg:'desert',  waves:4, enemyHpMul:1.6, enemyDmgMul:1.3, coinMul:1.3, baseHp:520, desc:'Gurun pasir tandus' },
-  { id:7,  name:'Sunken Oasis',       bg:'desert',  waves:5, enemyHpMul:1.75, enemyDmgMul:1.35, coinMul:1.4, baseHp:560, desc:'Penyergapan gurun' },
-  { id:8,  name:'Canyon of Bones',    bg:'desert',  waves:5, enemyHpMul:1.9, enemyDmgMul:1.4, coinMul:1.5, baseHp:600, desc:'Jalur sempit berbatu' },
-  { id:9,  name:'Sandstorm Gorge',    bg:'desert',  waves:6, enemyHpMul:2.1, enemyDmgMul:1.5, coinMul:1.6, baseHp:650, desc:'Badai pasir ganas' },
-  { id:10, name:'Tomb of the Giant',  bg:'desert',  waves:6, enemyHpMul:2.4, enemyDmgMul:1.6, coinMul:1.8, baseHp:780, desc:'👑 BOSS: Skeleton Giant', isBoss:true, bossName:'Skeleton Giant' },
+  { id:6,  name:'Dune Outskirts',     bg:'desert',  waves:2, enemyHpMul:1.6, enemyDmgMul:1.3, coinMul:1.3, baseHp:520, desc:'Gurun pasir tandus' },
+  { id:7,  name:'Sunken Oasis',       bg:'desert',  waves:2, enemyHpMul:1.75, enemyDmgMul:1.35, coinMul:1.4, baseHp:560, desc:'Penyergapan gurun' },
+  { id:8,  name:'Canyon of Bones',    bg:'desert',  waves:2, enemyHpMul:1.9, enemyDmgMul:1.4, coinMul:1.5, baseHp:600, desc:'Jalur sempit berbatu' },
+  { id:9,  name:'Sandstorm Gorge',    bg:'desert',  waves:2, enemyHpMul:2.1, enemyDmgMul:1.5, coinMul:1.6, baseHp:650, desc:'Badai pasir ganas' },
+  { id:10, name:'Tomb of the Giant',  bg:'desert',  waves:2, enemyHpMul:2.4, enemyDmgMul:1.6, coinMul:1.8, baseHp:780, desc:'👑 BOSS: Skeleton Giant', isBoss:true, bossName:'Skeleton Giant' },
 
   // Realm 3: Forest (Levels 11 - 15)
-  { id:11, name:'Whispering Woods',   bg:'forest',  waves:5, enemyHpMul:2.3, enemyDmgMul:1.65, coinMul:1.7, baseHp:650, desc:'Hutan berkabut gelap' },
-  { id:12, name:'Poison Mire',        bg:'forest',  waves:5, enemyHpMul:2.5, enemyDmgMul:1.7, coinMul:1.8, baseHp:700, desc:'Rawa beracun mematikan' },
-  { id:13, name:'Spider Glen',        bg:'forest',  waves:6, enemyHpMul:2.7, enemyDmgMul:1.8, coinMul:1.9, baseHp:750, desc:'Serbuan cepat musuh' },
-  { id:14, name:'Ancient Grove',      bg:'forest',  waves:6, enemyHpMul:2.9, enemyDmgMul:1.9, coinMul:2.0, baseHp:800, desc:'Reruntuhan kuil kuno' },
-  { id:15, name:'Heart of Titan',     bg:'forest',  waves:6, enemyHpMul:3.3, enemyDmgMul:2.0, coinMul:2.2, baseHp:950, desc:'👑 BOSS: Treant Titan', isBoss:true, bossName:'Treant Titan' },
+  { id:11, name:'Whispering Woods',   bg:'forest',  waves:2, enemyHpMul:2.3, enemyDmgMul:1.65, coinMul:1.7, baseHp:650, desc:'Hutan berkabut gelap' },
+  { id:12, name:'Poison Mire',        bg:'forest',  waves:2, enemyHpMul:2.5, enemyDmgMul:1.7, coinMul:1.8, baseHp:700, desc:'Rawa beracun mematikan' },
+  { id:13, name:'Spider Glen',        bg:'forest',  waves:2, enemyHpMul:2.7, enemyDmgMul:1.8, coinMul:1.9, baseHp:750, desc:'Serbuan cepat musuh' },
+  { id:14, name:'Ancient Grove',      bg:'forest',  waves:2, enemyHpMul:2.9, enemyDmgMul:1.9, coinMul:2.0, baseHp:800, desc:'Reruntuhan kuil kuno' },
+  { id:15, name:'Heart of Titan',     bg:'forest',  waves:2, enemyHpMul:3.3, enemyDmgMul:2.0, coinMul:2.2, baseHp:950, desc:'👑 BOSS: Treant Titan', isBoss:true, bossName:'Treant Titan' },
 
   // Realm 4: Snow (Levels 16 - 20)
-  { id:16, name:'Frost Valley',       bg:'snow',    waves:5, enemyHpMul:3.1, enemyDmgMul:2.0, coinMul:2.1, baseHp:800, desc:'Salju dingin membeku' },
-  { id:17, name:'Glacial Divide',     bg:'snow',    waves:6, enemyHpMul:3.3, enemyDmgMul:2.1, coinMul:2.2, baseHp:850, desc:'Lembah es terjal' },
-  { id:18, name:'Blizzard Ridge',     bg:'snow',    waves:6, enemyHpMul:3.6, enemyDmgMul:2.2, coinMul:2.3, baseHp:900, desc:'Badai salju tebal' },
-  { id:19, name:'Icebound Keep',      bg:'snow',    waves:7, enemyHpMul:3.9, enemyDmgMul:2.3, coinMul:2.5, baseHp:980, desc:'Benteng es yang kokoh' },
-  { id:20, name:'Crown of Glacier',   bg:'snow',    waves:7, enemyHpMul:4.4, enemyDmgMul:2.5, coinMul:2.8, baseHp:1150, desc:'👑 BOSS: Frost Dragon King', isBoss:true, bossName:'Frost Dragon King' },
+  { id:16, name:'Frost Valley',       bg:'snow',    waves:2, enemyHpMul:3.1, enemyDmgMul:2.0, coinMul:2.1, baseHp:800, desc:'Salju dingin membeku' },
+  { id:17, name:'Glacial Divide',     bg:'snow',    waves:2, enemyHpMul:3.3, enemyDmgMul:2.1, coinMul:2.2, baseHp:850, desc:'Lembah es terjal' },
+  { id:18, name:'Blizzard Ridge',     bg:'snow',    waves:2, enemyHpMul:3.6, enemyDmgMul:2.2, coinMul:2.3, baseHp:900, desc:'Badai salju tebal' },
+  { id:19, name:'Icebound Keep',      bg:'snow',    waves:2, enemyHpMul:3.9, enemyDmgMul:2.3, coinMul:2.5, baseHp:980, desc:'Benteng es yang kokoh' },
+  { id:20, name:'Crown of Glacier',   bg:'snow',    waves:2, enemyHpMul:4.4, enemyDmgMul:2.5, coinMul:2.8, baseHp:1150, desc:'👑 BOSS: Frost Dragon King', isBoss:true, bossName:'Frost Dragon King' },
 
   // Realm 5: Volcano (Levels 21 - 25)
-  { id:21, name:'Ash Wasteland',      bg:'volcano', waves:6, enemyHpMul:4.2, enemyDmgMul:2.5, coinMul:2.7, baseHp:950, desc:'Lautan abu vulkanik' },
-  { id:22, name:'Brimstone Ravine',   bg:'volcano', waves:6, enemyHpMul:4.5, enemyDmgMul:2.6, coinMul:2.9, baseHp:1000, desc:'Sungai lahar membara' },
-  { id:23, name:'Molten Core',        bg:'volcano', waves:7, enemyHpMul:4.8, enemyDmgMul:2.7, coinMul:3.1, baseHp:1080, desc:'Kawah magma pijar' },
-  { id:24, name:'Obsidian Gates',     bg:'volcano', waves:7, enemyHpMul:5.2, enemyDmgMul:2.9, coinMul:3.3, baseHp:1180, desc:'Gerbang api obsidian' },
-  { id:25, name:'Colossus Caldera',   bg:'volcano', waves:8, enemyHpMul:5.8, enemyDmgMul:3.1, coinMul:3.6, baseHp:1400, desc:'👑 BOSS: Magma Colossus', isBoss:true, bossName:'Magma Colossus' },
+  { id:21, name:'Ash Wasteland',      bg:'volcano', waves:2, enemyHpMul:4.2, enemyDmgMul:2.5, coinMul:2.7, baseHp:950, desc:'Lautan abu vulkanik' },
+  { id:22, name:'Brimstone Ravine',   bg:'volcano', waves:2, enemyHpMul:4.5, enemyDmgMul:2.6, coinMul:2.9, baseHp:1000, desc:'Sungai lahar membara' },
+  { id:23, name:'Molten Core',        bg:'volcano', waves:2, enemyHpMul:4.8, enemyDmgMul:2.7, coinMul:3.1, baseHp:1080, desc:'Kawah magma pijar' },
+  { id:24, name:'Obsidian Gates',     bg:'volcano', waves:2, enemyHpMul:5.2, enemyDmgMul:2.9, coinMul:3.3, baseHp:1180, desc:'Gerbang api obsidian' },
+  { id:25, name:'Colossus Caldera',   bg:'volcano', waves:2, enemyHpMul:5.8, enemyDmgMul:3.1, coinMul:3.6, baseHp:1400, desc:'👑 BOSS: Magma Colossus', isBoss:true, bossName:'Magma Colossus' },
 
   // Realm 6: Night / Shadow Realm (Levels 26 - 30)
-  { id:26, name:'Dusk Threshold',     bg:'night',   waves:6, enemyHpMul:5.6, enemyDmgMul:3.1, coinMul:3.5, baseHp:1150, desc:'Gerbang malam abadi' },
-  { id:27, name:'Shadow Crypts',      bg:'night',   waves:7, enemyHpMul:6.0, enemyDmgMul:3.3, coinMul:3.8, baseHp:1250, desc:'Jeritan kegelapan' },
-  { id:28, name:'Void Sanctuary',     bg:'night',   waves:7, enemyHpMul:6.5, enemyDmgMul:3.5, coinMul:4.1, baseHp:1350, desc:'Prajurit bayangan elit' },
-  { id:29, name:'Nether Gate',        bg:'night',   waves:8, enemyHpMul:7.1, enemyDmgMul:3.8, coinMul:4.5, baseHp:1500, desc:'Garis pertahanan akhir' },
-  { id:30, name:'Throne of Emperor',  bg:'night',   waves:9, enemyHpMul:8.0, enemyDmgMul:4.2, coinMul:5.5, baseHp:1800, desc:'👑 FINAL BOSS: Dark Emperor', isBoss:true, bossName:'Dark Emperor' },
+  { id:26, name:'Dusk Threshold',     bg:'night',   waves:2, enemyHpMul:5.6, enemyDmgMul:3.1, coinMul:3.5, baseHp:1150, desc:'Gerbang malam abadi' },
+  { id:27, name:'Shadow Crypts',      bg:'night',   waves:2, enemyHpMul:6.0, enemyDmgMul:3.3, coinMul:3.8, baseHp:1250, desc:'Jeritan kegelapan' },
+  { id:28, name:'Void Sanctuary',     bg:'night',   waves:2, enemyHpMul:6.5, enemyDmgMul:3.5, coinMul:4.1, baseHp:1350, desc:'Prajurit bayangan elit' },
+  { id:29, name:'Nether Gate',        bg:'night',   waves:2, enemyHpMul:7.1, enemyDmgMul:3.8, coinMul:4.5, baseHp:1500, desc:'Garis pertahanan akhir' },
+  { id:30, name:'Throne of Emperor',  bg:'night',   waves:2, enemyHpMul:8.0, enemyDmgMul:4.2, coinMul:5.5, baseHp:1800, desc:'👑 FINAL BOSS: Dark Emperor', isBoss:true, bossName:'Dark Emperor' },
 ];
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -296,7 +320,10 @@ function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
   const target = document.getElementById(id);
   if(target) target.classList.remove('hidden');
-  document.getElementById('ui-bottom').classList.add('hidden');
+  const uib = document.getElementById('ui-bottom');
+  if(uib) uib.classList.add('hidden');
+  const uit = document.getElementById('ui-top');
+  if(uit) uit.classList.add('hidden');
 }
 
 function loginTab(tab){
@@ -539,6 +566,244 @@ resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
 // ══════════════════════════════════════════════════════════════════════════════
+// ── SOUND ENGINE (Web Audio API – zero external files) ────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+let _ac = null;
+let _musicNodes = [];
+let _musicGain = null;
+let _sfxGain = null;
+let _musicEnabled = true;
+let _sfxEnabled = true;
+let _currentMusicTheme = '';
+
+function getAC(){
+  if(!_ac){
+    try{ _ac = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){}
+  }
+  if(_ac && _ac.state==='suspended') _ac.resume().catch(()=>{});
+  return _ac;
+}
+
+// ── Master gain nodes ──────────────────────────────────────────────────────────
+function _ensureGains(){
+  const ac = getAC(); if(!ac) return;
+  if(!_sfxGain){
+    _sfxGain = ac.createGain(); _sfxGain.gain.value = 0.55;
+    _sfxGain.connect(ac.destination);
+  }
+  if(!_musicGain){
+    _musicGain = ac.createGain(); _musicGain.gain.value = 0.22;
+    _musicGain.connect(ac.destination);
+  }
+}
+
+// ── Generic sound helper ───────────────────────────────────────────────────────
+function _osc(freq, type='sine', dur=0.3, vol=0.4, attack=0.01, dest=null){
+  const ac=getAC(); if(!ac) return;
+  _ensureGains();
+  const g=ac.createGain();
+  g.gain.setValueAtTime(0,ac.currentTime);
+  g.gain.linearRampToValueAtTime(vol,ac.currentTime+attack);
+  g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+dur);
+  g.connect(dest||_sfxGain);
+  const o=ac.createOscillator(); o.type=type; o.frequency.value=freq; o.connect(g);
+  o.start(ac.currentTime); o.stop(ac.currentTime+dur);
+}
+
+function _noise(dur=0.1, vol=0.3, lpFreq=800, dest=null){
+  const ac=getAC(); if(!ac) return;
+  _ensureGains();
+  const buf=ac.createBuffer(1,ac.sampleRate*dur,ac.sampleRate);
+  const d=buf.getChannelData(0);
+  for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1);
+  const src=ac.createBufferSource(); src.buffer=buf;
+  const lp=ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=lpFreq;
+  const g=ac.createGain(); g.gain.setValueAtTime(vol,ac.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+dur);
+  src.connect(lp); lp.connect(g); g.connect(dest||_sfxGain);
+  src.start(); src.stop(ac.currentTime+dur);
+}
+
+// ── Named Sound Effects ────────────────────────────────────────────────────────
+const SFX = {
+  spawn(){
+    if(!_sfxEnabled) return;
+    _osc(380,'square',0.09,0.25,0.005);
+    _osc(560,'sine',0.12,0.18,0.01);
+  },
+  sword(){
+    if(!_sfxEnabled) return;
+    _noise(0.07,0.35,1200);
+    _osc(220,'sawtooth',0.07,0.2,0.005);
+  },
+  arrow(){
+    if(!_sfxEnabled) return;
+    const ac=getAC(); if(!ac) return;
+    _ensureGains();
+    const o=ac.createOscillator(); o.type='triangle';
+    const g=ac.createGain(); g.gain.setValueAtTime(0.3,ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.15);
+    o.frequency.setValueAtTime(900,ac.currentTime);
+    o.frequency.exponentialRampToValueAtTime(300,ac.currentTime+0.15);
+    o.connect(g); g.connect(_sfxGain);
+    o.start(); o.stop(ac.currentTime+0.15);
+  },
+  coin(){
+    if(!_sfxEnabled) return;
+    _osc(1046,'sine',0.1,0.3,0.005);
+    setTimeout(()=>_osc(1318,'sine',0.1,0.25,0.005),60);
+  },
+  waveStart(){
+    if(!_sfxEnabled) return;
+    [261,329,392].forEach((f,i)=>setTimeout(()=>_osc(f,'square',0.2,0.28,0.01),i*90));
+  },
+  bossSpawn(){
+    if(!_sfxEnabled) return;
+    _noise(0.6,0.5,400);
+    [55,73,98].forEach((f,i)=>setTimeout(()=>_osc(f,'sawtooth',0.5,0.35,0.02),i*80));
+    setTimeout(()=>_osc(220,'square',0.4,0.4,0.05),300);
+  },
+  bossDeath(){
+    if(!_sfxEnabled) return;
+    _noise(0.8,0.6,600);
+    [440,550,660,880].forEach((f,i)=>setTimeout(()=>_osc(f,'sine',0.5,0.4,0.01),i*70));
+    setTimeout(()=>{
+      [330,220,110,55].forEach((f,j)=>setTimeout(()=>_osc(f,'sawtooth',0.3,0.3,0.01),j*100));
+    },350);
+  },
+  baseHit(){
+    if(!_sfxEnabled) return;
+    _noise(0.2,0.45,500);
+    _osc(80,'sawtooth',0.2,0.3,0.01);
+  },
+  unitDeath(){
+    if(!_sfxEnabled) return;
+    _noise(0.15,0.25,900);
+    _osc(150,'sawtooth',0.12,0.15,0.005);
+  },
+  victory(){
+    if(!_sfxEnabled) return;
+    const notes=[523,659,784,1046];
+    notes.forEach((f,i)=>setTimeout(()=>_osc(f,'sine',0.4,0.35,0.01),i*130));
+    setTimeout(()=>_osc(1318,'sine',0.6,0.4,0.02),notes.length*130);
+  },
+  defeat(){
+    if(!_sfxEnabled) return;
+    [440,370,311,220].forEach((f,i)=>setTimeout(()=>_osc(f,'sawtooth',0.35,0.3,0.01),i*120));
+  },
+  skillUse(){
+    if(!_sfxEnabled) return;
+    _osc(660,'sine',0.08,0.35,0.01);
+    setTimeout(()=>_osc(880,'sine',0.12,0.4,0.01),80);
+    setTimeout(()=>_osc(1100,'sine',0.18,0.45,0.01),160);
+  },
+  thunder(){
+    if(!_sfxEnabled) return;
+    _noise(0.05,0.7,3000);
+    setTimeout(()=>_noise(0.3,0.55,800),60);
+    _osc(60,'sawtooth',0.4,0.45,0.005);
+  },
+  shield(){
+    if(!_sfxEnabled) return;
+    [440,554,659,880].forEach((f,i)=>setTimeout(()=>_osc(f,'triangle',0.25,0.3,0.01),i*50));
+  },
+  goldRush(){
+    if(!_sfxEnabled) return;
+    for(let i=0;i<6;i++) setTimeout(()=>SFX.coin(), i*55);
+  },
+};
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ── PROCEDURAL MUSIC ENGINE ───────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+const MUSIC_THEMES = {
+  plains:  { tempo:1.8, chords:[[261,329,392],[294,370,440],[246,311,392],[220,277,349]], type:'triangle', bass:65 },
+  desert:  { tempo:1.6, chords:[[277,349,415],[311,392,466],[261,329,392],[246,311,392]], type:'sawtooth', bass:55 },
+  forest:  { tempo:1.4, chords:[[220,277,330],[196,247,294],[174,220,261],[196,247,294]], type:'sine',     bass:49 },
+  snow:    { tempo:2.0, chords:[[261,329,392],[220,277,349],[196,247,294],[220,277,349]], type:'triangle', bass:65 },
+  volcano: { tempo:2.4, chords:[[233,311,415],[220,294,392],[196,261,349],[220,293,392]], type:'sawtooth', bass:55 },
+  night:   { tempo:1.2, chords:[[196,247,294],[185,233,277],[174,220,261],[185,233,277]], type:'sine',     bass:49 },
+  boss:    { tempo:3.2, chords:[[220,277,330],[196,261,311],[174,220,261],[196,233,293]], type:'sawtooth', bass:42 },
+};
+
+let _musicSeq = 0;
+let _musicTimer = null;
+
+function startMusic(theme){
+  if(!_musicEnabled) return;
+  if(_currentMusicTheme===theme) return;
+  stopMusic();
+  _currentMusicTheme = theme;
+  const cfg = MUSIC_THEMES[theme] || MUSIC_THEMES.plains;
+  const ac = getAC(); if(!ac) return;
+  _ensureGains();
+
+  function playBeat(){
+    if(!_musicEnabled || _currentMusicTheme!==theme) return;
+    const chord = cfg.chords[_musicSeq % cfg.chords.length];
+    _musicSeq++;
+
+    // Chord notes
+    chord.forEach((freq,i)=>{
+      const o=ac.createOscillator(); o.type=cfg.type; o.frequency.value=freq;
+      const g=ac.createGain();
+      g.gain.setValueAtTime(0,ac.currentTime);
+      g.gain.linearRampToValueAtTime(0.06-i*0.01, ac.currentTime+0.05);
+      g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime+cfg.tempo*0.9);
+      o.connect(g); g.connect(_musicGain);
+      o.start(ac.currentTime); o.stop(ac.currentTime+cfg.tempo);
+    });
+
+    // Bass
+    const bo=ac.createOscillator(); bo.type='sine'; bo.frequency.value=cfg.bass;
+    const bg=ac.createGain();
+    bg.gain.setValueAtTime(0,ac.currentTime);
+    bg.gain.linearRampToValueAtTime(0.18,ac.currentTime+0.1);
+    bg.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+cfg.tempo*0.85);
+    bo.connect(bg); bg.connect(_musicGain);
+    bo.start(ac.currentTime); bo.stop(ac.currentTime+cfg.tempo);
+
+    _musicTimer = setTimeout(playBeat, cfg.tempo*1000);
+  }
+  playBeat();
+}
+
+function stopMusic(){
+  _currentMusicTheme='';
+  if(_musicTimer){ clearTimeout(_musicTimer); _musicTimer=null; }
+}
+
+function toggleMusic(){
+  _musicEnabled = !_musicEnabled;
+  if(!_musicEnabled) stopMusic();
+  const btn=document.getElementById('btn-music');
+  if(btn) btn.textContent = _musicEnabled ? '🎵' : '🔇';
+}
+function toggleSFX(){
+  _sfxEnabled = !_sfxEnabled;
+  const btn=document.getElementById('btn-sfx');
+  if(btn) btn.textContent = _sfxEnabled ? '🔊' : '🔕';
+}
+
+// Kick off audio on first interaction
+document.addEventListener('pointerdown',()=>{ getAC(); _ensureGains(); },{once:true,passive:true});
+
+// SFX throttle: prevent sound spam when many units fight at once
+let _lastSwordSfx=0, _lastArrowSfx=0, _lastDeathSfx=0;
+const _sfxThrottle = (key, ms) => {
+  const now=Date.now();
+  if(key==='sword'){ if(now-_lastSwordSfx<ms) return false; _lastSwordSfx=now; return true; }
+  if(key==='arrow'){ if(now-_lastArrowSfx<ms) return false; _lastArrowSfx=now; return true; }
+  if(key==='death'){ if(now-_lastDeathSfx<ms) return false; _lastDeathSfx=now; return true; }
+  return true;
+};
+const _SFXOrig = {...SFX};
+SFX.sword = ()=>{ if(_sfxEnabled && _sfxThrottle('sword',90)) _SFXOrig.sword(); };
+SFX.arrow = ()=>{ if(_sfxEnabled && _sfxThrottle('arrow',120)) _SFXOrig.arrow(); };
+SFX.unitDeath = ()=>{ if(_sfxEnabled && _sfxThrottle('death',80)) _SFXOrig.unitDeath(); };
+
+
+// ══════════════════════════════════════════════════════════════════════════════
 // ── GRAPHICS HELPERS ─────────────────────────────────────────────────────────
 // ══════════════════════════════════════════════════════════════════════════════
 function rnd(a,b){ return a + Math.random()*(b-a); }
@@ -648,6 +913,295 @@ function drawStickman(x, y, color, dir, anim, role, hitFlash){
   ctx.restore();
 }
 
+// ══════════════════════════════════════════════════════════════════════════════
+// ── BOSS STYLES & COSTUMES (Unik per Realm / Tempat) ──────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+const BOSS_STYLES = {
+  plains:  { name:'Goblin King',        color:'#2e9e44', aura:'#22c55e' },
+  desert:  { name:'Skeleton Giant',     color:'#f1ede4', aura:'#eab308' },
+  forest:  { name:'Treant Titan',       color:'#5c3a21', aura:'#10b981' },
+  snow:    { name:'Frost Dragon King',  color:'#67e8f9', aura:'#06b6d4' },
+  volcano: { name:'Magma Colossus',     color:'#292524', aura:'#ff3b00' },
+  night:   { name:'Dark Emperor',       color:'#0f0f17', aura:'#a855f7' }
+};
+
+function drawBossCostume(u, x, feetY, dir, anim, hitFlash){
+  const theme = u.bossTheme || 'plains';
+  const rage = !!u.rageMode;
+  const now = performance.now() / 1000;
+
+  const R = 11;
+  const headR = R * 0.53;
+  const tH = R * 1.25;
+  const armH = R * 0.88;
+  const hcx = x, hcy = feetY - tH - headR;
+  const topHead = hcy - headR;
+  const sx = x + dir * armH * 0.8, sy = feetY - tH * 0.3; // hand position
+
+  // Theme-based aura color
+  let auraColor = '#ff2244';
+  if(theme === 'plains')  auraColor = rage ? '#ff2222' : '#22c55e'; // Goblin poisonous green
+  if(theme === 'desert')  auraColor = rage ? '#ff6600' : '#eab308'; // Desert ancient gold
+  if(theme === 'forest')  auraColor = rage ? '#ff2244' : '#10b981'; // Nature emerald
+  if(theme === 'snow')    auraColor = rage ? '#38bdf8' : '#06b6d4'; // Glacial cyan
+  if(theme === 'volcano') auraColor = rage ? '#ff0000' : '#ff4400'; // Inferno fire
+  if(theme === 'night')   auraColor = rage ? '#dc2626' : '#a855f7'; // Demonic violet
+
+  ctx.shadowBlur = rage ? 32 : 24;
+  ctx.shadowColor = auraColor;
+
+  // Base stickman body color
+  let bodyColor = u.color;
+  if(theme === 'plains')  bodyColor = rage ? '#b91c1c' : '#2e9e44'; // Goblin green skin
+  if(theme === 'desert')  bodyColor = rage ? '#ea580c' : '#f1ede4'; // Bone ivory
+  if(theme === 'forest')  bodyColor = rage ? '#991b1b' : '#5c3a21'; // Gnarled oak wood
+  if(theme === 'snow')    bodyColor = rage ? '#0284c7' : '#67e8f9'; // Ice crystal
+  if(theme === 'volcano') bodyColor = rage ? '#450a0a' : '#292524'; // Obsidian rock
+  if(theme === 'night')   bodyColor = rage ? '#3b0764' : '#0f0f17'; // Void shadow
+
+  // ── CAPE BEHIND BODY (Frost Dragon & Dark Emperor) ──
+  if(theme === 'snow' || theme === 'night'){
+    ctx.save();
+    ctx.shadowBlur = 0;
+    const capeColor = theme === 'snow' ? (rage ? '#0369a1dd' : '#0e7490dd') : (rage ? '#450a0add' : '#2e1065dd');
+    const capeTrim = theme === 'snow' ? '#a5f3fc' : '#c084fc';
+    const wave = Math.sin(now * 5 + anim) * 3;
+    ctx.fillStyle = capeColor; ctx.strokeStyle = capeTrim; ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x - dir * 2, feetY - tH * 0.75);
+    ctx.quadraticCurveTo(x - dir * 14 + wave, feetY - tH * 0.2, x - dir * 16 + wave, feetY);
+    ctx.lineTo(x - dir * 6, feetY);
+    ctx.lineTo(x, feetY - tH * 0.75);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    ctx.restore();
+  }
+
+  // Draw main stickman body
+  drawStickman(x, feetY, hitFlash ? '#ffffff' : bodyColor, dir, anim, 'warrior', hitFlash);
+  ctx.shadowBlur = 0;
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // ── THEME COSTUMES & ACCESSORIES ──────────────────────────────────────────
+  // ══════════════════════════════════════════════════════════════════════════
+
+  if(theme === 'plains'){
+    // 👑 1. GOBLIN KING (Plains)
+    // Pointy Goblin Ears
+    ctx.fillStyle = rage ? '#b91c1c' : '#22c55e';
+    ctx.strokeStyle = '#15803d'; ctx.lineWidth = 0.8;
+    // Left ear
+    ctx.beginPath(); ctx.moveTo(hcx - 4, hcy - 1); ctx.lineTo(hcx - 11, hcy - 4); ctx.lineTo(hcx - 4, hcy + 3); ctx.closePath(); ctx.fill(); ctx.stroke();
+    // Right ear
+    ctx.beginPath(); ctx.moveTo(hcx + 4, hcy - 1); ctx.lineTo(hcx + 12, hcy - 4); ctx.lineTo(hcx + 4, hcy + 3); ctx.closePath(); ctx.fill(); ctx.stroke();
+
+    // Jagged Bronze Crown with Emerald
+    ctx.fillStyle = '#d97706'; ctx.strokeStyle = '#78350f'; ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    ctx.moveTo(hcx - 5, topHead + 1);
+    ctx.lineTo(hcx - 6.5, topHead - 5);
+    ctx.lineTo(hcx - 2, topHead - 2);
+    ctx.lineTo(hcx, topHead - 7);
+    ctx.lineTo(hcx + 2, topHead - 2);
+    ctx.lineTo(hcx + 6.5, topHead - 5);
+    ctx.lineTo(hcx + 5, topHead + 1);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    // Emerald
+    ctx.fillStyle = '#10b981'; ctx.beginPath(); ctx.arc(hcx, topHead - 3, 1.3, 0, Math.PI*2); ctx.fill();
+
+    // Spiked Wooden Club (in hand)
+    ctx.save();
+    ctx.strokeStyle = '#78350f'; ctx.lineWidth = 4.2; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + dir * 16, sy - 14); ctx.stroke();
+    // Iron spikes on club
+    ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 1.4;
+    for(let i = 1; i <= 3; i++){
+      const cx = sx + dir * (i * 4 + 2), cy = sy - (i * 3.5 + 2);
+      ctx.beginPath(); ctx.moveTo(cx - 2, cy - 2); ctx.lineTo(cx + 2, cy + 2); ctx.stroke();
+    }
+    ctx.restore();
+
+  } else if(theme === 'desert'){
+    // 👑 2. SKELETON GIANT (Desert)
+    // Ribcage on Torso
+    ctx.strokeStyle = '#e2d9c8'; ctx.lineWidth = 1.6;
+    for(let r = 1; r <= 3; r++){
+      const ry = feetY - tH + r * 3;
+      ctx.beginPath(); ctx.moveTo(hcx - 3.5, ry); ctx.lineTo(hcx + 3.5, ry); ctx.stroke();
+    }
+
+    // Glowing hollow skull eye
+    ctx.fillStyle = '#000000'; ctx.beginPath(); ctx.arc(hcx + dir * 2, hcy, 2, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = rage ? '#ff2200' : '#fde047';
+    ctx.beginPath(); ctx.arc(hcx + dir * 2, hcy, 1.1, 0, Math.PI*2); ctx.fill();
+
+    // Pharaoh Golden Nemes Headdress
+    ctx.fillStyle = '#f59e0b'; ctx.strokeStyle = '#1d4ed8'; ctx.lineWidth = 0.9;
+    ctx.beginPath();
+    ctx.moveTo(hcx - 5, topHead + 2);
+    ctx.lineTo(hcx - 8, topHead + 7);
+    ctx.lineTo(hcx - 3, topHead - 4);
+    ctx.lineTo(hcx + 3, topHead - 4);
+    ctx.lineTo(hcx + 8, topHead + 7);
+    ctx.lineTo(hcx + 5, topHead + 2);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    // Royal Cobra crest
+    ctx.fillStyle = '#ffd700'; ctx.beginPath(); ctx.arc(hcx, topHead - 4.5, 1.4, 0, Math.PI*2); ctx.fill();
+
+    // Golden Khopesh (Curved Sickle Sword)
+    ctx.save();
+    ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    ctx.moveTo(sx, sy);
+    ctx.lineTo(sx + dir * 8, sy - 8);
+    // curve
+    ctx.quadraticCurveTo(sx + dir * 18, sy - 14, sx + dir * 14, sy - 22);
+    ctx.stroke();
+    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1; ctx.stroke(); // shiny cutting edge
+    ctx.restore();
+
+  } else if(theme === 'forest'){
+    // 👑 3. TREANT TITAN (Forest)
+    // Branch Antlers on Head
+    ctx.strokeStyle = '#3e2410'; ctx.lineWidth = 1.6; ctx.lineCap = 'round';
+    // Left branch
+    ctx.beginPath(); ctx.moveTo(hcx - 3, topHead + 1); ctx.lineTo(hcx - 7, topHead - 6); ctx.lineTo(hcx - 11, topHead - 9); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(hcx - 7, topHead - 6); ctx.lineTo(hcx - 5, topHead - 10); ctx.stroke();
+    // Right branch
+    ctx.beginPath(); ctx.moveTo(hcx + 3, topHead + 1); ctx.lineTo(hcx + 7, topHead - 6); ctx.lineTo(hcx + 11, topHead - 9); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(hcx + 7, topHead - 6); ctx.lineTo(hcx + 5, topHead - 10); ctx.stroke();
+
+    // Moss / Foliage Leaves
+    ctx.fillStyle = rage ? '#ef4444' : '#16a34a';
+    [[-6,-2], [6,-2], [-3,-7], [3,-7], [0,-5], [-8, 2], [8, 2]].forEach(([ox, oy])=>{
+      ctx.beginPath(); ctx.arc(hcx + ox, topHead + oy, 2, 0, Math.PI*2); ctx.fill();
+    });
+
+    // Mystic Green Nature Core on Chest
+    ctx.fillStyle = rage ? '#ff2200' : '#34d399';
+    ctx.shadowBlur = 8; ctx.shadowColor = '#10b981';
+    ctx.beginPath(); ctx.arc(x, feetY - tH * 0.6, 2.2, 0, Math.PI*2); ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Ancient Stone & Root War Hammer
+    ctx.save();
+    ctx.strokeStyle = '#5c3a21'; ctx.lineWidth = 3.2; // wood shaft
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + dir * 14, sy - 14); ctx.stroke();
+    // Stone head block
+    ctx.fillStyle = '#64748b'; ctx.strokeStyle = '#334155'; ctx.lineWidth = 1;
+    const hx = sx + dir * 14, hy = sy - 14;
+    ctx.fillRect(hx - 4, hy - 5, 8, 10);
+    ctx.strokeRect(hx - 4, hy - 5, 8, 10);
+    // Green runes on hammer
+    ctx.fillStyle = '#34d399'; ctx.fillRect(hx - 2, hy - 2, 4, 4);
+    ctx.restore();
+
+  } else if(theme === 'snow'){
+    // 👑 4. FROST DRAGON KING (Snow)
+    // Jagged Ice Crystal Dragon Horns
+    ctx.fillStyle = '#cffafe'; ctx.strokeStyle = '#0284c7'; ctx.lineWidth = 0.9;
+    // Left horn (swept back)
+    ctx.beginPath(); ctx.moveTo(hcx - 3, topHead + 1); ctx.lineTo(hcx - dir * 8 - 4, topHead - 8); ctx.lineTo(hcx - 1, topHead - 2); ctx.closePath(); ctx.fill(); ctx.stroke();
+    // Right horn
+    ctx.beginPath(); ctx.moveTo(hcx + 1, topHead - 2); ctx.lineTo(hcx - dir * 8 + 4, topHead - 8); ctx.lineTo(hcx + 3, topHead + 1); ctx.closePath(); ctx.fill(); ctx.stroke();
+
+    // Shoulder Ice Spikes
+    ctx.fillStyle = '#a5f3fc'; ctx.strokeStyle = '#0891b2'; ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(x - 6, feetY - tH * 0.7); ctx.lineTo(x - 9, feetY - tH * 0.95); ctx.lineTo(x - 3, feetY - tH * 0.75); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + 3, feetY - tH * 0.75); ctx.lineTo(x + 9, feetY - tH * 0.95); ctx.lineTo(x + 6, feetY - tH * 0.7); ctx.closePath(); ctx.fill(); ctx.stroke();
+
+    // Piercing Icy Eyes
+    ctx.fillStyle = rage ? '#ff3b30' : '#ffffff';
+    ctx.beginPath(); ctx.arc(hcx + dir * 2.2, hcy, 1.4, 0, Math.PI*2); ctx.fill();
+
+    // Glacial Crystal Greatsword
+    ctx.save();
+    ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + dir * 18, sy - 16); ctx.stroke();
+    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.8; // frost core
+    ctx.beginPath(); ctx.moveTo(sx + dir * 2, sy - 2); ctx.lineTo(sx + dir * 18, sy - 16); ctx.stroke();
+    // sword crossguard
+    ctx.strokeStyle = '#0284c7'; ctx.lineWidth = 2.2;
+    ctx.beginPath(); ctx.moveTo(sx - 3, sy - 1); ctx.lineTo(sx + 3, sy + 3); ctx.stroke();
+    ctx.restore();
+
+  } else if(theme === 'volcano'){
+    // 👑 5. MAGMA COLOSSUS (Volcano)
+    // Molten Lava Veins across body
+    ctx.strokeStyle = rage ? '#ff0000' : '#f97316'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(x, feetY - tH); ctx.lineTo(x + dir * 2, feetY - tH * 0.5); ctx.lineTo(x - dir, feetY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x - dir * 2, feetY - tH * 0.7); ctx.lineTo(x + dir * 3, feetY - tH * 0.4); ctx.stroke();
+
+    // Volcanic Obsidian Horns
+    ctx.fillStyle = '#1c1917'; ctx.strokeStyle = '#f97316'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(hcx - 4, topHead + 2); ctx.lineTo(hcx - 8, topHead - 8); ctx.lineTo(hcx - 1, topHead); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(hcx + 1, topHead); ctx.lineTo(hcx + 8, topHead - 8); ctx.lineTo(hcx + 4, topHead + 2); ctx.closePath(); ctx.fill(); ctx.stroke();
+
+    // Erupting Flames on Head
+    const flameH = 5 + Math.sin(now * 12) * 2;
+    ctx.fillStyle = '#ff4500';
+    ctx.beginPath(); ctx.moveTo(hcx - 3, topHead); ctx.lineTo(hcx, topHead - flameH); ctx.lineTo(hcx + 3, topHead); ctx.fill();
+    ctx.fillStyle = '#ffbb00';
+    ctx.beginPath(); ctx.moveTo(hcx - 1.5, topHead); ctx.lineTo(hcx, topHead - flameH * 0.7); ctx.lineTo(hcx + 1.5, topHead); ctx.fill();
+
+    // Fiery Glowing Eyes
+    ctx.fillStyle = '#fef08a'; ctx.beginPath(); ctx.arc(hcx + dir * 2, hcy, 1.4, 0, Math.PI*2); ctx.fill();
+
+    // Magma War Maul / Sledgehammer
+    ctx.save();
+    ctx.strokeStyle = '#78350f'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + dir * 15, sy - 14); ctx.stroke();
+    // Huge molten boulder hammer
+    const mx = sx + dir * 15, my = sy - 14;
+    ctx.fillStyle = '#292524'; ctx.strokeStyle = '#f97316'; ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.arc(mx, my, 6, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+    // Glowing lava cracks on hammer
+    ctx.strokeStyle = '#fde047'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(mx - 3, my); ctx.lineTo(mx + 3, my); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(mx, my - 3); ctx.lineTo(mx, my + 3); ctx.stroke();
+    ctx.restore();
+
+  } else if(theme === 'night'){
+    // 👑 6. DARK EMPEROR (Night / Final Boss)
+    // Spiked Gothic Imperial Crown
+    ctx.fillStyle = '#1e1b4b'; ctx.strokeStyle = '#6366f1'; ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(hcx - 6, topHead + 1);
+    ctx.lineTo(hcx - 7, topHead - 7);
+    ctx.lineTo(hcx - 3, topHead - 3);
+    ctx.lineTo(hcx, topHead - 10); // tall center spire
+    ctx.lineTo(hcx + 3, topHead - 3);
+    ctx.lineTo(hcx + 7, topHead - 7);
+    ctx.lineTo(hcx + 6, topHead + 1);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    // Glowing Violet Void Soul Gem
+    ctx.fillStyle = rage ? '#ff0033' : '#c084fc';
+    ctx.shadowBlur = 8; ctx.shadowColor = '#a855f7';
+    ctx.beginPath(); ctx.arc(hcx, topHead - 4, 1.6, 0, Math.PI*2); ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Sinister Crimson Demon Eyes
+    ctx.fillStyle = '#ff0033'; ctx.shadowBlur = 5; ctx.shadowColor = '#ff0033';
+    ctx.beginPath(); ctx.arc(hcx + dir * 2.2, hcy - 0.5, 1.6, 0, Math.PI*2); ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Nether Void Greatsword
+    ctx.save();
+    ctx.shadowBlur = 10; ctx.shadowColor = '#a855f7';
+    ctx.strokeStyle = '#7c3aed'; ctx.lineWidth = 4.2;
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + dir * 20, sy - 18); ctx.stroke();
+    // Dark core
+    ctx.strokeStyle = '#09090b'; ctx.lineWidth = 2.2;
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + dir * 19, sy - 17); ctx.stroke();
+    // Void blade runes
+    ctx.fillStyle = '#e879f9';
+    for(let r = 1; r <= 3; r++){
+      ctx.beginPath(); ctx.arc(sx + dir * (r * 5), sy - (r * 4.5), 1.1, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.restore();
+  }
+}
+
 // ── Base / Castle ─────────────────────────────────────────────────────────────
 function drawCastle(x, groundY, color, hp, maxHp, label, dir){
   ctx.save();
@@ -723,54 +1277,137 @@ const BG_THEMES = {
 
 function drawBackground(theme, groundY){
   const t = BG_THEMES[theme] || BG_THEMES.plains;
+  const now = performance.now() / 1000;
 
   // sky gradient
   const sg=ctx.createLinearGradient(0,0,0,groundY);
   sg.addColorStop(0, t.sky[0]); sg.addColorStop(1, t.sky[1]);
   ctx.fillStyle=sg; ctx.fillRect(0,0,W,groundY);
 
-  // stars (vary per theme)
+  // ── Twinkling stars (night, snow, forest, volcano) ──
   if(theme==='night'||theme==='volcano'||theme==='forest'||theme==='snow'){
-    ctx.fillStyle='#ffffff';
-    for(let i=0;i<60;i++){
-      const sx=(i*137.5+23)%W, sy=(i*79.3)%(groundY*0.8);
-      const sr=0.4+((i*3)%5)*0.25;
-      ctx.globalAlpha=0.3+((i*7)%10)*0.07;
+    for(let i=0;i<70;i++){
+      const sx=(i*137.5+23)%W, sy=(i*79.3)%(groundY*0.85);
+      const sr=0.4+((i*3)%5)*0.22;
+      const twinkle = 0.25 + Math.abs(Math.sin(now*1.5+i*0.7))*0.6;
+      ctx.globalAlpha=twinkle;
+      ctx.fillStyle = i%7===0 ? '#ffd7aa' : i%5===0 ? '#aadaff' : '#ffffff';
       ctx.beginPath(); ctx.arc(sx,sy,sr,0,Math.PI*2); ctx.fill();
     }
     ctx.globalAlpha=1;
   }
 
-  // theme specific BG decoration
+  // ── Shooting star (night only) ──
+  if(theme==='night'){
+    const shotCycle = (now * 0.18) % 1;
+    if(shotCycle < 0.12){
+      const sx = W * 0.2 + (W * 0.6) * ((now * 0.18 % 1) / 0.12);
+      const sy = groundY * 0.1 + groundY * 0.25 * ((now * 0.18 % 1) / 0.12);
+      ctx.globalAlpha = Math.min(1, (0.12 - shotCycle) / 0.04);
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx - 30, sy - 10); ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+    // dark purple nebula wisps
+    for(let i=0;i<4;i++){
+      const nx=(i*211+30)%W, ny=groundY*0.1+(i*67)%( groundY*0.5);
+      const rad=40+i*20;
+      ctx.globalAlpha=0.04;
+      ctx.fillStyle='#6600aa';
+      ctx.beginPath(); ctx.arc(nx,ny,rad,0,Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha=1;
+  }
+
+  // ── Volcano: lava sparks floating up ──
   if(theme==='volcano'){
-    // lava glow at horizon
-    const lgrd=ctx.createLinearGradient(0,groundY-30,0,groundY);
-    lgrd.addColorStop(0,'transparent'); lgrd.addColorStop(1,'#ff440055');
-    ctx.fillStyle=lgrd; ctx.fillRect(0,groundY-30,W,30);
+    const lgrd=ctx.createLinearGradient(0,groundY-50,0,groundY);
+    lgrd.addColorStop(0,'transparent'); lgrd.addColorStop(1,'#ff440066');
+    ctx.fillStyle=lgrd; ctx.fillRect(0,groundY-50,W,50);
     // volcano silhouettes
     ctx.fillStyle='#1a0808';
-    [[W*0.15,0.4],[W*0.7,0.5],[W*0.45,0.3]].forEach(([vx,hr])=>{
+    [[W*0.15,0.42],[W*0.7,0.52],[W*0.45,0.3]].forEach(([vx,hr])=>{
       ctx.beginPath();
       ctx.moveTo(vx-60,groundY); ctx.lineTo(vx,groundY-groundY*hr); ctx.lineTo(vx+60,groundY);
       ctx.closePath(); ctx.fill();
     });
+    // floating lava sparks
+    for(let i=0;i<20;i++){
+      const phase=(now*0.4+i*0.31)%1;
+      const sx=(i*83+W*0.2)%W;
+      const sy=groundY - phase*groundY*0.55;
+      const sa=Math.sin(phase*Math.PI);
+      ctx.globalAlpha=sa*0.8;
+      ctx.fillStyle=i%3===0?'#ff6600':i%3===1?'#ffaa00':'#ff2200';
+      ctx.beginPath(); ctx.arc(sx,sy,1.2+sa*2.5,0,Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha=1;
   }
+
+  // ── Forest: dark trees + fireflies ──
   if(theme==='forest'){
     ctx.fillStyle='#0a2008cc';
-    for(let i=0;i<8;i++){
-      const tx=(i*113+40)%W, th=40+((i*37)%50);
+    for(let i=0;i<10;i++){
+      const tx=(i*113+40)%W, th=50+((i*37)%60);
       ctx.beginPath();
-      ctx.moveTo(tx-15,groundY); ctx.lineTo(tx,groundY-th); ctx.lineTo(tx+15,groundY);
+      ctx.moveTo(tx-18,groundY); ctx.lineTo(tx,groundY-th); ctx.lineTo(tx+18,groundY);
       ctx.closePath(); ctx.fill();
     }
-  }
-  if(theme==='snow'){
-    // snow particles (static stars as flakes)
-    ctx.fillStyle='#ffffff88';
-    for(let i=0;i<25;i++){
-      const fx=(i*89+12)%W, fy=(i*67+20)%groundY;
-      ctx.beginPath(); ctx.arc(fx,fy,1,0,Math.PI*2); ctx.fill();
+    // fireflies
+    for(let i=0;i<12;i++){
+      const fx=(i*89+W*0.1)%W;
+      const fy=groundY*0.4+(i*67)%(groundY*0.4);
+      const pulse=Math.abs(Math.sin(now*2.5+i*1.1));
+      ctx.globalAlpha=pulse*0.8;
+      ctx.fillStyle='#aaff44';
+      ctx.shadowBlur=8; ctx.shadowColor='#88ff00';
+      ctx.beginPath(); ctx.arc(fx,fy,1.5,0,Math.PI*2); ctx.fill();
+      ctx.shadowBlur=0;
     }
+    ctx.globalAlpha=1;
+  }
+
+  // ── Snow: animated falling snowflakes ──
+  if(theme==='snow'){
+    for(let i=0;i<30;i++){
+      const phase=(now*0.15+i*0.07)%1;
+      const fx=((i*89+12)+Math.sin(now*0.5+i)*20)%W;
+      const fy=phase*groundY;
+      ctx.globalAlpha=0.5+Math.sin(phase*Math.PI)*0.4;
+      ctx.fillStyle='#ffffff';
+      ctx.beginPath(); ctx.arc(fx,fy,1+((i%3)*0.5),0,Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha=1;
+    // mountain silhouettes
+    ctx.fillStyle='#aabbcc55';
+    [[W*0.1,0.35],[W*0.5,0.45],[W*0.85,0.3]].forEach(([mx,hr])=>{
+      ctx.beginPath();
+      ctx.moveTo(mx-55,groundY); ctx.lineTo(mx,groundY-groundY*hr); ctx.lineTo(mx+55,groundY);
+      ctx.closePath(); ctx.fill();
+    });
+  }
+
+  // ── Plains: distant clouds ──
+  if(theme==='plains'){
+    ctx.fillStyle='#ffffff';
+    for(let i=0;i<4;i++){
+      const cx=((i*210+now*14*(i%2===0?1:-1))%W+W)%W;
+      const cy=groundY*0.15+i*18;
+      ctx.globalAlpha=0.07+i*0.02;
+      ctx.beginPath(); ctx.ellipse(cx,cy,40+i*10,18,0,0,Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha=1;
+  }
+
+  // ── Desert: distant dunes + heat shimmer tint ──
+  if(theme==='desert'){
+    ctx.fillStyle='#6a4a1a55';
+    [[W*0.2,0.18],[W*0.65,0.15],[W*0.45,0.22]].forEach(([dx,hr])=>{
+      ctx.beginPath();
+      ctx.moveTo(dx-70,groundY); ctx.ellipse(dx,groundY-groundY*hr,70,groundY*hr,0,Math.PI,0,true);
+      ctx.closePath(); ctx.fill();
+    });
   }
 
   // ground
@@ -778,14 +1415,16 @@ function drawBackground(theme, groundY){
   gg.addColorStop(0,t.ground[0]); gg.addColorStop(0.2,t.ground[1]); gg.addColorStop(1,'#000');
   ctx.fillStyle=gg; ctx.fillRect(0,groundY,W,H-groundY);
 
-  // ground line highlight
-  ctx.strokeStyle=t.accent; ctx.lineWidth=2;
+  // ground line highlight with glow
+  ctx.shadowBlur=8; ctx.shadowColor=t.accent;
+  ctx.strokeStyle=t.accent; ctx.lineWidth=2.5;
   ctx.beginPath(); ctx.moveTo(0,groundY); ctx.lineTo(W,groundY); ctx.stroke();
+  ctx.shadowBlur=0;
 
   // path dashes
   ctx.strokeStyle=t.accent+'44'; ctx.lineWidth=5;
   ctx.setLineDash([14,10]);
-  ctx.beginPath(); ctx.moveTo(50,groundY+5); ctx.lineTo(W-50,groundY+5); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(50,groundY+6); ctx.lineTo(W-50,groundY+6); ctx.stroke();
   ctx.setLineDash([]);
 }
 
@@ -881,6 +1520,7 @@ class Unit{
     this.id=++uid; this.type=type; this.team=team;
     this.isBoss=false;
     this.bossName='';
+    this.bossTheme='plains';
     const c=UNIT_CFG[type];
     const hpM=1+(upgMul.warrior_hp&&type==='warrior'?upgMul.warrior_hp:0);
     const sM =1+(upgMul.spearman_spd&&type==='spearman'?upgMul.spearman_spd:0);
@@ -931,8 +1571,10 @@ class Unit{
 
   attack(target,gs){
     if(this.type==='archer'){
+      SFX.arrow();
       gs.projectiles.push(new Projectile(this.x,this.feetY-14,target.x,target.feetY-14,this.dmg,this.color,330,3.5,this.team));
     } else {
+      SFX.sword();
       target.takeDmg(this.dmg,gs,this);
       gs.spawnHitFx(target.x,target.feetY-10,this.color,5);
     }
@@ -946,63 +1588,62 @@ class Unit{
   draw(){
     if(this.dead) return;
     if(this.isBoss){
+      const BOSS_SCALE = 2.8; // raksasa!
       ctx.save();
-      // Scale boss 1.6x around feet
+      // Push origin to feet, scale up, then draw stickman in scaled space
       ctx.translate(this.x, this.feetY);
-      ctx.scale(1.6, 1.6);
+      ctx.scale(BOSS_SCALE, BOSS_SCALE);
       ctx.translate(-this.x, -this.feetY);
-      drawStickman(this.x,this.feetY,this.color,this.dir,this.anim,this.type,this.hitFlash>0);
-      
-      // Crown on head
-      const R = 11;
-      const headR = R * 0.53;
-      const tH = R * 1.25;
-      const headY = this.feetY - tH - headR * 2;
-      ctx.fillStyle = '#ffd700';
-      ctx.strokeStyle = '#e69500';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(this.x - 7, headY);
-      ctx.lineTo(this.x - 9, headY - 8);
-      ctx.lineTo(this.x - 3, headY - 4);
-      ctx.lineTo(this.x, headY - 11);
-      ctx.lineTo(this.x + 3, headY - 4);
-      ctx.lineTo(this.x + 9, headY - 8);
-      ctx.lineTo(this.x + 7, headY);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-      ctx.fillStyle = '#ff2222';
-      ctx.beginPath();
-      ctx.arc(this.x, headY - 4, 1.5, 0, Math.PI*2);
-      ctx.fill();
-      ctx.restore();
 
-      // Boss Big Floating HP Bar + Title
-      const bw=64, bh=7, bx=this.x-bw/2, by=this.feetY-80;
-      ctx.fillStyle='#000000dd'; ctx.fillRect(bx-1,by-1,bw+2,bh+2);
-      const p=clamp(this.hp/this.maxHp,0,1);
-      const grad=ctx.createLinearGradient(bx,by,bx+bw,by);
-      grad.addColorStop(0,'#ff2244'); grad.addColorStop(1,'#ff9900');
-      ctx.fillStyle=grad;
-      if(bw*p>0) ctx.fillRect(bx,by,bw*p,bh);
-      ctx.strokeStyle='#ffd700'; ctx.lineWidth=1;
-      ctx.strokeRect(bx-1,by-1,bw+2,bh+2);
+      drawBossCostume(this, this.x, this.feetY, this.dir, this.anim, this.hitFlash > 0);
+      ctx.restore(); // back to normal (unscaled) space
 
-      ctx.fillStyle='#ffe066';
-      ctx.font='bold 9px Arial';
-      ctx.textAlign='center';
-      ctx.shadowBlur=4; ctx.shadowColor='#000';
-      ctx.fillText(`👑 ${this.bossName || 'BOSS'}`, this.x, by - 4);
-      ctx.shadowBlur=0;
+      // ── Floating Boss HP bar & name  (unscaled, always legible) ──
+      // Estimate giant unit's top in screen coords
+      // In scaled space, top of stickman ≈ feetY - (tH + headR*2)*BOSS_SCALE
+      const unitHeight = (tH + headR * 2 + 8) * BOSS_SCALE;
+      const barW = 80, barH = 9;
+      const bx = this.x - barW / 2;
+      const by = this.feetY - unitHeight - 18;
+
+      // dark background
+      ctx.fillStyle = '#000000dd';
+      ctx.fillRect(bx - 2, by - 2, barW + 4, barH + 4);
+
+      // fill
+      const pct = clamp(this.hp / this.maxHp, 0, 1);
+      const hpGrad = ctx.createLinearGradient(bx, by, bx + barW, by);
+      hpGrad.addColorStop(0, '#ff2244');
+      hpGrad.addColorStop(0.5, '#ff6600');
+      hpGrad.addColorStop(1, '#ffcc00');
+      ctx.fillStyle = hpGrad;
+      if (barW * pct > 0) ctx.fillRect(bx, by, barW * pct, barH);
+
+      // gold border
+      ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 1.5;
+      ctx.strokeRect(bx - 2, by - 2, barW + 4, barH + 4);
+
+      // Name label
+      ctx.fillStyle = '#ffe066';
+      ctx.font = 'bold 10px Arial';
+      ctx.textAlign = 'center';
+      ctx.shadowBlur = 5; ctx.shadowColor = '#000';
+      ctx.fillText(`👑 ${this.bossName || 'BOSS'}`, this.x, by - 6);
+      ctx.shadowBlur = 0;
+
+      // HP numbers
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 7px Arial';
+      ctx.fillText(`${Math.ceil(this.hp)} / ${this.maxHp}`, this.x, by + barH - 1);
+
     } else {
-      drawStickman(this.x,this.feetY,this.color,this.dir,this.anim,this.type,this.hitFlash>0);
+      drawStickman(this.x, this.feetY, this.color, this.dir, this.anim, this.type, this.hitFlash > 0);
       // HP bar
-      const bw=26,bh=4,bx=this.x-bw/2,by=this.feetY-42;
-      ctx.fillStyle='#000000aa'; ctx.fillRect(bx,by,bw,bh);
-      const p=clamp(this.hp/this.maxHp,0,1);
-      ctx.fillStyle=p>.5?'#44ff66':p>.25?'#ffcc00':'#ff3333';
-      if(bw*p>0) ctx.fillRect(bx,by,bw*p,bh);
+      const bw = 26, bh = 4, bx = this.x - bw/2, by = this.feetY - 42;
+      ctx.fillStyle = '#000000aa'; ctx.fillRect(bx, by, bw, bh);
+      const p = clamp(this.hp / this.maxHp, 0, 1);
+      ctx.fillStyle = p > .5 ? '#44ff66' : p > .25 ? '#ffcc00' : '#ff3333';
+      if (bw * p > 0) ctx.fillRect(bx, by, bw * p, bh);
     }
   }
 }
@@ -1047,15 +1688,31 @@ class GameState{
     this.coins=80+startCoinsBonus;
     this.coinTimer=0;
     this.coinRate=(1.1+coinRateBonus)*(this.level.coinMul||1);
-    this.wave=1; this.maxWaves=this.level.waves;
-    this.waveTimer=0; this.waveCooldown=16;
+    this.wave=0; this.maxWaves=this.level.waves||2;
+    this.waveTimer=0; this.waveCooldown=10; // next wave 10s saja!
     this.waveActive=false;
     this.enemySpawnQueue=[]; this.enemySpawnTimer=0;
     this.gameOver=false; this.won=false;
     this.elapsed=0;
     this.totalKills=0;
+    this.screenShake=0;     // screen shake timer
+    this.shakeIntensity=0;  // shake pixels
+    this.bossAlive=false;   // track if boss is on field
+
+    // ── Skills ──────────────────────────────────────────────────────────────
+    this.skills = [
+      { id:'thunder', name:'Petir', icon:'⚡', desc:'Sambaran Petir', cd:45, cdLeft:0,
+        color:'#ffee00', action: ()=>this._skillThunder() },
+      { id:'shield',  name:'Perisai', icon:'🛡️', desc:'Pelindung Base', cd:60, cdLeft:0,
+        color:'#44aaff', action: ()=>this._skillShield() },
+      { id:'gold',    name:'Emas', icon:'💰', desc:'Hujan Koin +150', cd:35, cdLeft:0,
+        color:'#ffd700', action: ()=>this._skillGold() },
+    ];
+    this.shieldActive = 0; // seconds remaining
+
     this.buildUI();
-    this.startWave();
+    // Start background music
+    startMusic(this.level.bg);
   }
 
   onResize(){
@@ -1068,39 +1725,61 @@ class GameState{
 
   buildUI(){
     const uib=document.getElementById('ui-bottom');
-    uib.classList.remove('hidden');
-    uib.innerHTML='';
+    if(uib){
+      uib.classList.remove('hidden');
+      uib.innerHTML='';
+    }
+    const uit=document.getElementById('ui-top');
+    if(uit){
+      uit.classList.remove('hidden');
+      uit.innerHTML='';
+    }
+
+    // ── Skill Bar (Top of Battle) ─────────────────────────────────────────────
+    const skillBar = document.createElement('div');
+    skillBar.className = 'skill-bar';
+    const audioWrap = document.createElement('div');
+    audioWrap.style.cssText='display:flex;flex-direction:column;gap:3px;justify-content:center;';
+    ['music','sfx'].forEach(type=>{
+      const ab=document.createElement('button');
+      ab.id='btn-'+type; ab.textContent=type==='music'?(_musicEnabled?'🎵':'🔇'):(_sfxEnabled?'🔊':'🔕');
+      ab.style.cssText='background:linear-gradient(135deg,#141b2d,#1e293b);border:1px solid #334155;border-radius:7px;color:#cbd5e1;font-size:.82em;width:28px;height:22px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px #0006;outline:none;';
+      ab.onclick=()=>type==='music'?toggleMusic():toggleSFX();
+      audioWrap.appendChild(ab);
+    });
+    skillBar.appendChild(audioWrap);
+    this.skills.forEach(sk=>{
+      const btn=document.createElement('button');
+      btn.className='skill-btn ready'; btn.id='skbtn_'+sk.id;
+      btn.innerHTML=`<span class="s-icon">${sk.icon}</span><span>${sk.name}</span><span class="s-cdtxt" id="skcd_${sk.id}">SIAP</span><div class="s-cd" id="skbar_${sk.id}" style="width:0%"></div>`;
+      let ht=false;
+      btn.addEventListener('touchstart',e=>{e.preventDefault();ht=true;this._useSkill(sk.id);},{passive:false});
+      btn.addEventListener('click',e=>{if(ht){ht=false;return;}this._useSkill(sk.id);});
+      skillBar.appendChild(btn);
+    });
+    if(uit) uit.appendChild(skillBar);
+
+    // ── Unit Bar (Bottom of Battle) ───────────────────────────────────────────
     const bar=document.createElement('div');
     bar.className='unit-bar';
-
-    // Home / Menu button
     const homeBtn=document.createElement('button');
     homeBtn.className='unit-btn';
     homeBtn.style.cssText='max-width:44px;flex:none;font-size:1.1em;padding:10px 4px;';
     homeBtn.innerHTML='🏠<br><span style="font-size:0.6em;color:#aaa;">MENU</span>';
     homeBtn.onclick=()=>{
       if(confirm('Keluar ke menu utama? Pertempuran saat ini akan berhenti.')){
-        gs.gameOver=true;
-        showScreen('screen-menu');
+        gs.gameOver=true; stopMusic(); showScreen('screen-menu');
       }
     };
     bar.appendChild(homeBtn);
-
     ['warrior','archer','spearman'].forEach(t=>{
       const c=UNIT_CFG[t];
       const btn=document.createElement('button');
       btn.className='unit-btn'; btn.id='ubtn_'+t;
       btn.innerHTML=`<span class="icon">${t==='warrior'?'⚔️':t==='archer'?'🏹':'🗡️'}</span><span>${c.name}</span><span class="cost">${c.cost}🪙</span>`;
-      let handledTouch=false;
-      btn.addEventListener('touchstart',e=>{
-        e.preventDefault();
-        handledTouch=true;
-        this.spawnPlayer(t);
-      },{passive:false});
-      btn.addEventListener('click',e=>{
-        if(handledTouch){ handledTouch=false; return; }
-        this.spawnPlayer(t);
-      });
+      let ht=false;
+      btn.addEventListener('touchstart',e=>{e.preventDefault();ht=true;this.spawnPlayer(t);},{passive:false});
+      btn.addEventListener('click',e=>{if(ht){ht=false;return;}this.spawnPlayer(t);});
       bar.appendChild(btn);
     });
     uib.appendChild(bar);
@@ -1111,8 +1790,62 @@ class GameState{
     ['warrior','archer','spearman'].forEach(t=>{
       const btn=document.getElementById('ubtn_'+t);
       if(!btn) return;
-      const ok=this.coins>=UNIT_CFG[t].cost;
-      btn.classList.toggle('cant-afford',!ok);
+      btn.classList.toggle('cant-afford',this.coins<UNIT_CFG[t].cost);
+    });
+  }
+
+  _useSkill(id){
+    if(this.gameOver) return;
+    const sk=this.skills.find(s=>s.id===id);
+    if(!sk||sk.cdLeft>0) return;
+    SFX.skillUse();
+    sk.action();
+    sk.cdLeft=sk.cd;
+    this._refreshSkillBtns();
+  }
+
+  _skillThunder(){
+    SFX.thunder();
+    const dmg=180+this.levelId*12;
+    let hit=0;
+    for(const u of this.enemyUnits){ if(!u.dead){ u.takeDmg(dmg,this,null); hit++; } }
+    this.textPops.push(new TextPop(W/2,this.groundY-100,`⚡ PETIR! -${dmg} x${hit}`,'#ffee00',16));
+    this.screenShake=0.35; this.shakeIntensity=7;
+    for(let i=0;i<20;i++){
+      this.particles.push(new Particle(rnd(0,W),rnd(this.groundY*0.2,this.groundY*0.8),'#ffff44',rnd(-60,60),rnd(-80,80),rnd(0.2,0.5),rnd(2,5),'spark'));
+    }
+  }
+
+  _skillShield(){
+    SFX.shield();
+    this.shieldActive=8;
+    this.textPops.push(new TextPop(this.playerBase.x,this.groundY-80,'🛡️ PELINDUNG AKTIF!','#44aaff',14));
+    for(let i=0;i<15;i++){
+      this.particles.push(new Particle(this.playerBase.x+rnd(-25,25),this.playerBase.y+rnd(-50,0),'#44aaff',rnd(-40,40),rnd(-100,-20),rnd(0.5,1.0),rnd(2,4),'dot'));
+    }
+  }
+
+  _skillGold(){
+    SFX.goldRush();
+    const bonus=150+this.levelId*5;
+    this.coins=Math.min(this.coins+bonus,9999);
+    this.textPops.push(new TextPop(W/2,this.groundY-80,`💰 +${bonus} KOIN!`,'#ffd700',16));
+    for(let i=0;i<10;i++){
+      this.particles.push(new Particle(W/2+rnd(-40,40),this.groundY*0.5+rnd(-30,30),'#ffd700',rnd(-60,60),rnd(-120,-30),rnd(0.4,0.8),rnd(2,4),'dot'));
+    }
+  }
+
+  _refreshSkillBtns(){
+    this.skills.forEach(sk=>{
+      const btn=document.getElementById('skbtn_'+sk.id);
+      const cdTxt=document.getElementById('skcd_'+sk.id);
+      const cdBar=document.getElementById('skbar_'+sk.id);
+      if(!btn) return;
+      const ready=sk.cdLeft<=0;
+      btn.classList.toggle('ready',ready);
+      btn.classList.toggle('on-cd',!ready);
+      if(cdTxt) cdTxt.textContent=ready?'SIAP':`${Math.ceil(sk.cdLeft)}s`;
+      if(cdBar) cdBar.style.width=ready?'0%':`${(sk.cdLeft/sk.cd)*100}%`;
     });
   }
 
@@ -1121,6 +1854,7 @@ class GameState{
     const c=UNIT_CFG[type];
     if(this.coins<c.cost) return;
     this.coins-=c.cost;
+    SFX.spawn();
     const u=new Unit(type,'player',this.playerBase.x+25,this.groundY,this.upgMul);
     this.playerUnits.push(u);
     this.textPops.push(new TextPop(u.x,u.feetY-50,`-${c.cost}`,'#fc0'));
@@ -1137,13 +1871,17 @@ class GameState{
       const maxPool=Math.min(pool.length,1+Math.floor((this.wave+lv.id)/2));
       this.enemySpawnQueue.push({ type: pool[Math.floor(Math.random()*maxPool)], isBoss: false });
     }
-    // If it's a boss level and the final wave, enqueue the Boss unit!
-    if(lv.isBoss && this.wave === this.maxWaves){
+    const isFinalBossWave = lv.isBoss && this.wave === this.maxWaves;
+    if(isFinalBossWave){
       this.enemySpawnQueue.push({ type: 'warrior', isBoss: true, bossName: lv.bossName });
       this.textPops.push(new TextPop(W/2, this.groundY-115, `👑 BOSS DEKATI: ${lv.bossName.toUpperCase()}!`, '#ff2244', 18));
+      startMusic('boss'); // Switch to boss music!
+      SFX.bossSpawn();
+    } else {
+      SFX.waveStart();
     }
     this.enemySpawnTimer=0.8;
-    this.textPops.push(new TextPop(W/2,this.groundY-90,`⚠ WAVE ${this.wave}/${this.maxWaves}!`,(lv.isBoss && this.wave === this.maxWaves)?'#ff2244':'#ff8800',15));
+    this.textPops.push(new TextPop(W/2,this.groundY-90,`⚠ WAVE ${this.wave}/${this.maxWaves}!`,isFinalBossWave?'#ff2244':'#ff8800',15));
   }
 
   spawnEnemy(item){
@@ -1157,12 +1895,18 @@ class GameState{
     if(isBoss){
       u.isBoss = true;
       u.bossName = bossName || 'BOSS';
-      u.color = '#ff1133';
+      u.bossTheme = lv.bg || 'plains';
+      const bStyle = BOSS_STYLES[u.bossTheme] || BOSS_STYLES.plains;
+      u.color = bStyle.color;
       u.hp = Math.round(c.hp * lv.enemyHpMul * wScale * 3.8);
       u.maxHp = u.hp;
       u.dmg = Math.round(c.dmg * lv.enemyDmgMul * 1.8);
       u.spd = Math.round(c.spd * 0.82);
       u.range = Math.round(c.range * 1.3);
+      // boss entrance screen shake!
+      this.screenShake = 0.6;
+      this.shakeIntensity = 10;
+      this.bossAlive = true;
     } else {
       u.hp=Math.round(c.hp*lv.enemyHpMul*wScale);
       u.maxHp=u.hp;
@@ -1177,6 +1921,10 @@ class GameState{
       if(unit.isBoss){
         reward = Math.floor(rnd(60,120)*(1+this.levelId*0.06));
         this.textPops.push(new TextPop(unit.x,unit.feetY-65,`👑 BOSS DEFEATED! +${reward} 💎`,'#ffd700',16));
+        // massive screen shake on boss death
+        this.screenShake = 1.2;
+        this.shakeIntensity = 18;
+        this.bossAlive = false;
         if(session && session.profile){
           session.profile.gems = (session.profile.gems || 0) + 15;
           saveProfile();
@@ -1189,8 +1937,21 @@ class GameState{
       if(attacker) attacker.kills++;
     }
     if(unit.isBoss){
-      for(let k=0; k<4; k++){
-        this.spawnDeathFx(unit.x + rnd(-20,20), unit.feetY + rnd(-30,0), '#ffd700');
+      SFX.bossDeath();
+      startMusic(this.level.bg); // Return to level music after boss
+      // massive gold explosion
+      for(let k=0; k<8; k++){
+        this.spawnDeathFx(unit.x + rnd(-40,40), unit.feetY + rnd(-50,0), '#ffd700');
+      }
+      for(let k=0; k<5; k++){
+        this.spawnDeathFx(unit.x + rnd(-20,20), unit.feetY + rnd(-30,0), '#ff4400');
+      }
+    } else {
+      SFX.unitDeath();
+      // slight shake on player unit death
+      if(unit.team==='player'){
+        this.screenShake = Math.max(this.screenShake, 0.12);
+        this.shakeIntensity = Math.max(this.shakeIntensity, 4);
       }
     }
     this.spawnDeathFx(unit.x,unit.feetY,unit.color);
@@ -1218,8 +1979,42 @@ class GameState{
     this.elapsed+=dt;
 
     // coins
+    const prevCoins = Math.floor(this.coins);
     this.coinTimer+=dt;
     if(this.coinTimer>=1/this.coinRate){ this.coinTimer-=1/this.coinRate; this.coins=Math.min(this.coins+1,9999); }
+    if(Math.floor(this.coins)>prevCoins && Math.floor(this.coins)%5===0) SFX.coin();
+
+    // skill cooldowns
+    this.skills.forEach(sk=>{ if(sk.cdLeft>0){ sk.cdLeft=Math.max(0,sk.cdLeft-dt); } });
+    this._refreshSkillBtns();
+
+    // shield timer
+    if(this.shieldActive>0){
+      this.shieldActive=Math.max(0,this.shieldActive-dt);
+      // While shield is active, negate incoming damage to player base
+      const origHp = this.playerBase.hp;
+      // (intercepted below in base attack logic — shield flag used in drawHUD/base)
+    }
+
+    // screen shake decay
+    if(this.screenShake > 0) this.screenShake = Math.max(0, this.screenShake - dt * 3);
+
+    // boss rage mode: turn red and faster at 30% HP
+    for(const u of this.enemyUnits){
+      if(u.isBoss && !u.dead){
+        const pct = u.hp / u.maxHp;
+        if(pct <= 0.3 && !u.rageMode){
+          u.rageMode = true;
+          u.spd = Math.round(u.spd * 1.5);
+          u.atkRate = u.atkRate * 1.4;
+          u.color = '#ff0000';
+          this.textPops.push(new TextPop(u.x, u.feetY - 90, '🔥 RAGE MODE!', '#ff2200', 14));
+          this.screenShake = 0.4;
+          this.shakeIntensity = 8;
+          SFX.bossSpawn(); // rage roar!
+        }
+      }
+    }
 
     // enemy spawn
     if(this.enemySpawnQueue.length>0){
@@ -1233,6 +2028,7 @@ class GameState{
     // wave end
     if(this.waveActive&&this.enemySpawnQueue.length===0&&this.enemyUnits.every(u=>u.dead)){
       this.waveActive=false; this.waveTimer=0;
+      this.waveCooldown=10; // next wave 10s saja!
       session.profile.stats.wavesCleared=(session.profile.stats.wavesCleared||0)+1;
       if(this.wave>=this.maxWaves){
         // all waves done — check if any enemy alive, if not win soon
@@ -1244,7 +2040,8 @@ class GameState{
       this.waveTimer+=dt;
       if(this.waveTimer>=this.waveCooldown){
         this.wave++;
-        this.waveCooldown=Math.max(8,this.waveCooldown-1);
+        this.waveTimer=0;
+        this.waveCooldown=10; // next wave 10s saja!
         this.startWave();
       }
     }
@@ -1263,6 +2060,7 @@ class GameState{
       for(const t of tgts){
         if(t.dead) continue;
         if(Math.hypot(t.x-p.x,(t.feetY-14)-p.y)<20){
+          if(p.team==='enemy') SFX.sword();
           t.takeDmg(p.dmg,this,null);
           this.spawnHitFx(p.x,p.y,p.color,4);
           p.dead=true; break;
@@ -1270,7 +2068,17 @@ class GameState{
       }
       if(!p.dead){
         const eb=p.team==='player'?this.enemyBase:this.playerBase;
-        if(Math.hypot(eb.x-p.x,(eb.y-36)-p.y)<32){ eb.hp-=p.dmg; this.spawnHitFx(p.x,p.y,p.color,3); p.dead=true; }
+        if(Math.hypot(eb.x-p.x,(eb.y-36)-p.y)<32){
+          // Shield blocks damage to player base
+          if(eb===this.playerBase && this.shieldActive>0){
+            this.spawnHitFx(p.x,p.y,'#44aaff',3);
+          } else {
+            eb.hp-=p.dmg;
+            SFX.baseHit();
+          }
+          this.spawnHitFx(p.x,p.y,p.color,3);
+          p.dead=true;
+        }
       }
     }
     this.projectiles=this.projectiles.filter(p=>!p.dead);
@@ -1293,9 +2101,13 @@ class GameState{
   endGame(won){
     this.gameOver = true;
     this.won = won;
+    stopMusic();
+    setTimeout(()=> won ? SFX.victory() : SFX.defeat(), 200);
 
     const uib = document.getElementById('ui-bottom');
     if(uib) uib.classList.add('hidden');
+    const uit = document.getElementById('ui-top');
+    if(uit) uit.classList.add('hidden');
 
     try {
       if(!session){
@@ -1376,7 +2188,28 @@ class GameState{
   }
 
   draw(){
+    // ── Screen shake ──
+    let shakeDone=false;
+    if(this.screenShake > 0){
+      const s = this.shakeIntensity * (this.screenShake / 0.6);
+      ctx.save();
+      ctx.translate(rnd(-s,s), rnd(-s*0.5,s*0.5));
+      shakeDone=true;
+    }
+
     drawBackground(this.theme, this.groundY);
+
+    // Boss atmospheric red vignette
+    if(this.bossAlive){
+      const now = performance.now()/1000;
+      const pulse = 0.06 + Math.abs(Math.sin(now * 2.2)) * 0.06;
+      const vgrd = ctx.createRadialGradient(W/2, this.groundY, W*0.2, W/2, this.groundY, W*0.9);
+      vgrd.addColorStop(0, 'transparent');
+      vgrd.addColorStop(1, `rgba(120,0,0,${pulse})`);
+      ctx.fillStyle = vgrd;
+      ctx.fillRect(0, 0, W, H);
+    }
+
     this.playerBase.draw();
     this.enemyBase.draw();
     for(const u of this.enemyUnits)  u.draw();
@@ -1384,49 +2217,135 @@ class GameState{
     for(const p of this.projectiles) p.draw();
     for(const p of this.particles)   p.draw();
     for(const t of this.textPops)    t.draw();
+    if(shakeDone) ctx.restore();
     this.drawHUD();
   }
 
   drawHUD(){
-    // top bar bg
-    ctx.fillStyle='rgba(4,8,20,0.82)';
-    ctx.fillRect(0,0,W,50);
-    ctx.strokeStyle='#1a2a4a'; ctx.lineWidth=1;
-    ctx.beginPath(); ctx.moveTo(0,50); ctx.lineTo(W,50); ctx.stroke();
+    const now = performance.now()/1000;
 
-    // Coins
-    ctx.fillStyle='#ffe066'; ctx.font='bold 13px Arial'; ctx.textAlign='left';
-    ctx.shadowBlur=4; ctx.shadowColor='#f80';
-    ctx.fillText(`🪙 ${Math.floor(this.coins)}`, 10, 22);
+    // ── top bar gradient bg ──
+    const hudGrd = ctx.createLinearGradient(0,0,0,52);
+    hudGrd.addColorStop(0,'rgba(2,4,14,0.96)');
+    hudGrd.addColorStop(1,'rgba(4,8,22,0.88)');
+    ctx.fillStyle=hudGrd;
+    ctx.fillRect(0,0,W,52);
+    // glow line at bottom of HUD
+    ctx.strokeStyle = this.bossAlive ? '#ff2244' : '#1a3a6a';
+    ctx.lineWidth = 1.5;
+    ctx.shadowBlur = this.bossAlive ? 8 : 0;
+    ctx.shadowColor = '#ff0022';
+    ctx.beginPath(); ctx.moveTo(0,52); ctx.lineTo(W,52); ctx.stroke();
     ctx.shadowBlur=0;
 
-    // Level name
-    ctx.fillStyle='#7af'; ctx.font='10px Arial'; ctx.textAlign='left';
-    ctx.fillText(`Lv.${this.levelId} ${this.level.name}`, 10, 38);
+    // ── Coins (animated glow pulse) ──
+    const coinPulse = 0.5 + Math.abs(Math.sin(now*3))*0.5;
+    ctx.fillStyle='#ffe066'; ctx.font='bold 14px Arial'; ctx.textAlign='left';
+    ctx.shadowBlur = 4 + coinPulse*4; ctx.shadowColor='#ff9900';
+    ctx.fillText(`🪙 ${Math.floor(this.coins)}`, 8, 22);
+    ctx.shadowBlur=0;
 
-    // Wave
+    // ── Level name ──
+    ctx.fillStyle='#5599cc'; ctx.font='9px Arial'; ctx.textAlign='left';
+    ctx.fillText(`Lv.${this.levelId} · ${this.level.name}`, 8, 38);
+
+    // ── Wave indicator (center) ──
     const isBossWave = this.level.isBoss && this.wave === this.maxWaves;
-    ctx.fillStyle = isBossWave ? '#ff3344' : '#ff8800';
-    ctx.font = 'bold 14px Arial'; ctx.textAlign = 'center';
-    ctx.shadowBlur = 6; ctx.shadowColor = isBossWave ? '#f00' : '#f80';
-    ctx.fillText(isBossWave ? `👑 BOSS WAVE ${this.wave}/${this.maxWaves}` : `WAVE ${this.wave}/${this.maxWaves}`, W/2, 22);
-    ctx.shadowBlur = 0;
-
-    if(!this.waveActive){
-      const rem=Math.ceil(this.waveCooldown-this.waveTimer);
-      ctx.fillStyle='#89a'; ctx.font='10px Arial';
-      ctx.fillText(`Next wave in ${rem}s`, W/2, 38);
+    if(isBossWave){
+      const blink = Math.floor(now*3)%2===0;
+      ctx.fillStyle = blink ? '#ff3344' : '#ff8888';
+      ctx.font = 'bold 13px Arial'; ctx.textAlign = 'center';
+      ctx.shadowBlur = 10; ctx.shadowColor = '#ff0022';
+      ctx.fillText(`👑 BOSS WAVE ${this.wave}/${this.maxWaves}`, W/2, 20);
+      ctx.shadowBlur = 0;
     } else {
-      ctx.fillStyle = isBossWave ? '#ff2244' : '#ff6622';
-      ctx.font = 'bold 10px Arial';
-      ctx.fillText(isBossWave ? `👑 ${this.level.bossName.toUpperCase()} MENYERANG!` : '⚠ UNDER ATTACK!', W/2, 38);
+      ctx.fillStyle = '#ff8800';
+      ctx.font = 'bold 13px Arial'; ctx.textAlign = 'center';
+      ctx.shadowBlur = 5; ctx.shadowColor = '#f80';
+      ctx.fillText(`WAVE ${this.wave}/${this.maxWaves}`, W/2, 20);
+      ctx.shadowBlur = 0;
     }
 
-    // Time + units
-    ctx.fillStyle='#acd'; ctx.font='bold 12px Arial'; ctx.textAlign='right';
-    ctx.fillText(`${Math.floor(this.elapsed)}s`, W-10, 22);
-    ctx.fillStyle='#89a'; ctx.font='10px Arial';
-    ctx.fillText(`⚔${this.playerUnits.length} 🔴${this.enemyUnits.length}`, W-10, 38);
+    if(!this.waveActive){
+      const rem=Math.max(1, Math.ceil(this.waveCooldown-this.waveTimer));
+      ctx.fillStyle='#6688aa'; ctx.font='9px Arial';
+      ctx.fillText(`⏱ Next wave: ${rem}s`, W/2, 37);
+    } else {
+      ctx.fillStyle = isBossWave ? '#ff2244' : '#ff7733';
+      ctx.font = 'bold 9px Arial';
+      ctx.fillText(isBossWave ? `☠ ${this.level.bossName.toUpperCase()}!` : '⚠ UNDER ATTACK!', W/2, 37);
+    }
+
+    // ── Time + unit count ──
+    ctx.fillStyle='#88aacc'; ctx.font='bold 13px Arial'; ctx.textAlign='right';
+    ctx.fillText(`${Math.floor(this.elapsed)}s`, W-8, 22);
+    ctx.fillStyle='#556677'; ctx.font='9px Arial';
+    ctx.fillText(`⚔${this.playerUnits.length} 🔴${this.enemyUnits.length}`, W-8, 37);
+
+    // ── Boss MEGA HP bar (shown when boss is alive) ──
+    if(this.bossAlive){
+      const boss = this.enemyUnits.find(u=>u.isBoss && !u.dead);
+      if(boss){
+        const pct = clamp(boss.hp / boss.maxHp, 0, 1);
+        const barY = 104, barH = 14;
+        const barX = 8, barW = W - 16;
+
+        // background
+        ctx.fillStyle='rgba(0,0,0,0.8)';
+        ctx.fillRect(barX-1, barY-1, barW+2, barH+2);
+
+        // gradient fill per boss theme
+        const theme = boss.bossTheme || 'plains';
+        const bossGrd = ctx.createLinearGradient(barX, barY, barX+barW, barY);
+        if(boss.rageMode){
+          bossGrd.addColorStop(0,'#ff0000');
+          bossGrd.addColorStop(0.5,'#ff4400');
+          bossGrd.addColorStop(1,'#ff8800');
+        } else if(theme === 'plains'){
+          bossGrd.addColorStop(0,'#047857'); bossGrd.addColorStop(0.5,'#059669'); bossGrd.addColorStop(1,'#10b981');
+        } else if(theme === 'desert'){
+          bossGrd.addColorStop(0,'#b45309'); bossGrd.addColorStop(0.5,'#d97706'); bossGrd.addColorStop(1,'#fbbf24');
+        } else if(theme === 'forest'){
+          bossGrd.addColorStop(0,'#14532d'); bossGrd.addColorStop(0.5,'#15803d'); bossGrd.addColorStop(1,'#22c55e');
+        } else if(theme === 'snow'){
+          bossGrd.addColorStop(0,'#0369a1'); bossGrd.addColorStop(0.5,'#0284c7'); bossGrd.addColorStop(1,'#38bdf8');
+        } else if(theme === 'volcano'){
+          bossGrd.addColorStop(0,'#991b1b'); bossGrd.addColorStop(0.5,'#dc2626'); bossGrd.addColorStop(1,'#f97316');
+        } else if(theme === 'night'){
+          bossGrd.addColorStop(0,'#3b0764'); bossGrd.addColorStop(0.5,'#6b21a8'); bossGrd.addColorStop(1,'#c084fc');
+        } else {
+          bossGrd.addColorStop(0,'#cc0022'); bossGrd.addColorStop(0.5,'#ff2244'); bossGrd.addColorStop(1,'#ff6600');
+        }
+        ctx.fillStyle=bossGrd;
+        if(barW*pct > 0) ctx.fillRect(barX, barY, barW*pct, barH);
+
+        // animated shine
+        const shineX = barX + (barW*pct*(0.5+Math.sin(now*4)*0.5));
+        ctx.globalAlpha=0.3;
+        ctx.fillStyle='#ffffff';
+        ctx.fillRect(Math.max(barX, shineX-8), barY, 16, barH/2);
+        ctx.globalAlpha=1;
+
+        // border
+        ctx.strokeStyle = boss.rageMode ? '#ff4400' : '#ffd700';
+        ctx.lineWidth=1.5;
+        ctx.shadowBlur=6; ctx.shadowColor=boss.rageMode?'#ff0':'#ffd700';
+        ctx.strokeRect(barX-1, barY-1, barW+2, barH+2);
+        ctx.shadowBlur=0;
+
+        // Boss name inside bar
+        ctx.fillStyle='#fff';
+        ctx.font=`bold 9px Arial`; ctx.textAlign='left';
+        ctx.shadowBlur=3; ctx.shadowColor='#000';
+        const bossLabel = boss.rageMode ? `🔥 ${boss.bossName} [RAGE]` : `👑 ${boss.bossName}`;
+        ctx.fillText(bossLabel, barX+4, barY+barH-3);
+        ctx.shadowBlur=0;
+
+        // HP percentage
+        ctx.fillStyle='#ffcccc'; ctx.font='bold 9px Arial'; ctx.textAlign='right';
+        ctx.fillText(`${Math.ceil(pct*100)}%`, barX+barW-3, barY+barH-3);
+      }
+    }
 
     ctx.textAlign='left';
   }
@@ -1447,6 +2366,8 @@ function retryLevel(){
   document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
   const uib = document.getElementById('ui-bottom');
   if(uib) uib.classList.remove('hidden');
+  const uit = document.getElementById('ui-top');
+  if(uit) uit.classList.remove('hidden');
   gs=new GameState(currentLevelId);
 }
 
